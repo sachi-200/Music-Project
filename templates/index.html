@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NādaVerse</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ========== GLOBAL RESET ========== */
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+/* ========== BODY ========== */
+body {
+font-family: 'Montserrat', sans-serif;
+background: linear-gradient(135deg, #fff5ee 0%, #f8e8dc 50%, #ffe9c7 100%);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+overflow: hidden;
+color: #333;
+position: relative;
+}
+/* Animated background glow */
+body::before {
+content: "";
+position: absolute;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle at 20% 20%, rgba(255,183,77,0.25), transparent 60%),
+radial-gradient(circle at 80% 80%, rgba(244,143,177,0.25), transparent 60%),
+radial-gradient(circle at 50% 50%, rgba(179,229,252,0.2), transparent 70%);
+animation: float-bg 20s infinite alternate ease-in-out;
+z-index: 0;
+}
+@keyframes float-bg {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-50px, 50px); }
+}
+/* ========== HEADER ========== */
+header {
+text-align: center;
+z-index: 1;
+padding: 60px 20px 40px;
+}
+header h1 {
+font-family: 'Orbitron', sans-serif;
+font-size: 3.5em;
+color: #e76f51;
+text-shadow: 0 3px 8px rgba(231, 111, 81, 0.3);
+letter-spacing: 1px;
+}
+header p {
+font-size: 1.3em;
+color: #555;
+margin-top: 15px;
+font-weight: 500;
+}
+/* ========== OPTIONS BUTTONS ========== */
+.options {
+display: flex;
+justify-content: center;
+gap: 40px;
+flex-wrap: wrap;
+margin-top: 60px;
+z-index: 1;
+}
+.option-btn {
+position: relative;
+padding: 18px 55px;
+font-size: 1.1em;
+font-weight: 600;
+text-transform: uppercase;
+color: #fff;
+background: linear-gradient(135deg, #f4a261, #e76f51);
+border: none;
+border-radius: 14px;
+cursor: pointer;
+text-decoration: none;
+transition: all 0.25s ease;
+box-shadow: 0 4px 14px rgba(231, 111, 81, 0.3);
+display: inline-block;
+}
+.option-btn:hover {
+transform: translateY(-4px) scale(1.03);
+background: linear-gradient(135deg, #e76f51, #f4a261);
+box-shadow: 0 6px 20px rgba(231, 111, 81, 0.45);
+}
+.option-btn::after {
+content: "";
+position: absolute;
+inset: 0;
+border-radius: 14px;
+border: 2px solid rgba(255,255,255,0.4);
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.option-btn:hover::after {
+opacity: 1;
+}
+/* ========== RESPONSIVE ========== */
+@media (max-width: 600px) {
+header h1 {
+font-size: 2.3em;
+  }
+header p {
+font-size: 1.1em;
+  }
+.option-btn {
+padding: 14px 40px;
+font-size: 1em;
+  }
+.options {
+gap: 30px;
+  }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>🌌 NādaVerse 🎶</h1>
+<p>Create, listen, and feel the resonance of every note.</p>
+</header>
+<div class="options">
+<a href="{{ url_for('keyboard') }}" class="option-btn">🎹 Play Keyboard</a>
+<a href="{{ url_for('audio_page') }}" class="option-btn">🎧 Listen to Rāgas</a>
+<a href="{{ url_for('audio_mapping') }}" class="option-btn">🗣️ Voice → Rāga Mapping</a>
+</div>
+</body>
+</html>

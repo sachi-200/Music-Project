@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raga Swara Explorer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Lato:wght@300;400;500;600&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Lato', sans-serif;
+    background: linear-gradient(135deg, #f5f1e8 0%, #ebe4d6 50%, #e0d5c4 100%);
+    padding: 50px 20px;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  .container {
+    background: linear-gradient(145deg, #fdfcfa 0%, #faf8f3 100%);
+    border-radius: 24px;
+    padding: 50px;
+    box-shadow: 
+      0 10px 40px rgba(0,0,0,0.08),
+      0 2px 8px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+    max-width: 1200px;
+    width: 100%;
+    border: 1px solid rgba(232,223,208,0.6);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 28px,
+        rgba(245,241,232,0.3) 28px,
+        rgba(245,241,232,0.3) 29px
+      );
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(218,165,105,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  h1 {
+    margin: 0 0 10px 0;
+    color: #3a3530;
+    text-align: center;
+    font-size: 36px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #8b7e74;
+    margin-bottom: 45px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    font-family: 'Lato', sans-serif;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 13px 28px;
+    border: 1.5px solid;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3a3530 0%, #2a251f 100%);
+    color: #fdfcfa;
+    border-color: #3a3530;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(58,53,48,0.2);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    background: linear-gradient(145deg, #fdfcfa 0%, #f5f1e8 100%);
+    color: #3a3530;
+    border-color: #d4cabe;
+  }
+
+  .btn-secondary:hover {
+    background: linear-gradient(145deg, #f5f1e8 0%, #ebe4d6 100%);
+    border-color: #bfb3a3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+
+  .btn-secondary:active {
+    transform: translateY(0);
+  }
+
+  .swara-display {
+    background: linear-gradient(135deg, #f9f7f4 0%, #f5f1e8 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 35px;
+    min-height: 85px;
+    border: 1.5px solid rgba(232,223,208,0.8);
+    position: relative;
+    box-shadow: 
+      inset 0 2px 4px rgba(0,0,0,0.02),
+      0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  .swara-display::before {
+    content: '♪';
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 48px;
+    color: #e8dfd0;
+    opacity: 0.35;
+    font-family: serif;
+  }
+
+  .swara-label {
+    font-size: 11px;
+    color: #8b7e74;
+    margin-bottom: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+  }
+
+  .swara-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .swara-tag {
+    background: linear-gradient(135deg, #3a3530 0%, #2a251f 100%);
+    color: #fdfcfa;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    box-shadow: 0 3px 8px rgba(58,53,48,0.15);
+    transition: all 0.3s ease;
+  }
+
+  .swara-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(58,53,48,0.25);
+  }
+
+  #piano-wrapper {
+    overflow-x: auto;
+    margin-bottom: 35px;
+    display: flex;
+    justify-content: center;
+    padding: 30px 10px;
+    background: linear-gradient(180deg, rgba(245,241,232,0.3) 0%, transparent 100%);
+    border-radius: 16px;
+  }
+
+  #piano {
+    display: flex;
+    position: relative;
+    user-select: none;
+    min-width: fit-content;
+    justify-content: center;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.1));
+  }
+
+  .white-key, .black-key {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    font-weight: 500;
+    font-size: 12px;
+    position: relative;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-bottom: 14px;
+  }
+
+  .white-key {
+    width: 64px;
+    height: 260px;
+    background: linear-gradient(180deg, #fdfcfa 0%, #f9f7f4 100%);
+    margin-right: 2px;
+    z-index: 1;
+    border: 1.5px solid #d4cabe;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 
+      0 4px 8px rgba(0,0,0,0.06),
+      inset 0 -2px 4px rgba(0,0,0,0.03);
+  }
+
+  .white-key::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+    border-radius: 0 0 8px 8px;
+    pointer-events: none;
+  }
+
+  .white-key:hover {
+    background: linear-gradient(180deg, #f9f7f4 0%, #f0ebe3 100%);
+    transform: translateY(-3px);
+    box-shadow: 
+      0 6px 16px rgba(0,0,0,0.1),
+      inset 0 -2px 4px rgba(0,0,0,0.03);
+  }
+
+  .white-key:active, .white-key.active {
+    background: linear-gradient(180deg, #f0ebe3 0%, #e8dfd0 100%);
+    transform: translateY(2px);
+    box-shadow: 
+      0 2px 4px rgba(0,0,0,0.08),
+      inset 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .black-key {
+    width: 42px;
+    height: 165px;
+    background: linear-gradient(180deg, #3a3530 0%, #2a251f 100%);
+    color: #fdfcfa;
+    z-index: 2;
+    position: absolute;
+    margin-left: -21px;
+    border: 1.5px solid #1a1815;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 
+      0 6px 12px rgba(0,0,0,0.25),
+      inset 0 1px 2px rgba(255,255,255,0.1);
+  }
+
+  .black-key::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+    border-radius: 0 0 6px 6px;
+    pointer-events: none;
+  }
+
+  .black-key:hover {
+    background: linear-gradient(180deg, #4a453f 0%, #3a3530 100%);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 16px rgba(0,0,0,0.3),
+      inset 0 1px 2px rgba(255,255,255,0.15);
+  }
+
+  .black-key:active, .black-key.active {
+    background: linear-gradient(180deg, #2a251f 0%, #1a1815 100%);
+    transform: translateY(2px);
+    box-shadow: 
+      0 3px 8px rgba(0,0,0,0.3),
+      inset 0 2px 4px rgba(0,0,0,0.4);
+  }
+
+  .key-label {
+    pointer-events: none;
+    font-size: 11px;
+    color: #8b7e74;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+  }
+
+  .black-key .key-label {
+    color: #bfb3a3;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .results {
+    background: linear-gradient(135deg, #f9f7f4 0%, #f5f1e8 100%);
+    border-radius: 20px;
+    padding: 30px;
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1.5px solid rgba(232,223,208,0.8);
+    position: relative;
+    box-shadow: 
+      inset 0 2px 4px rgba(0,0,0,0.02),
+      0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  .results::before {
+    content: '♫';
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    font-size: 36px;
+    color: #e8dfd0;
+    opacity: 0.4;
+    font-family: serif;
+  }
+
+  .results h2 {
+    margin: 0 0 25px 0;
+    color: #3a3530;
+    font-size: 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .results h2::before {
+    content: '◆';
+    margin-right: 10px;
+    color: #8b7e74;
+    font-size: 14px;
+  }
+
+  .no-results {
+    text-align: center;
+    color: #8b7e74;
+    padding: 60px 20px;
+    font-size: 14px;
+    line-height: 2;
+    font-weight: 400;
+  }
+
+  .melakarta-card {
+    background: linear-gradient(145deg, #fdfcfa 0%, #faf8f3 100%);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 16px;
+    border-left: 3px solid #8b7e74;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1.5px solid rgba(232,223,208,0.6);
+    border-left: 3px solid #8b7e74;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .melakarta-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, #8b7e74 0%, #3a3530 100%);
+    transition: width 0.3s ease;
+  }
+
+  .melakarta-card:hover::before {
+    width: 5px;
+  }
+
+  .melakarta-card:hover {
+    transform: translateX(4px) translateY(-2px);
+    box-shadow: 
+      0 8px 24px rgba(0,0,0,0.08),
+      -4px 0 16px rgba(139,126,116,0.1);
+    border-left-color: #3a3530;
+  }
+
+  .melakarta-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .melakarta-number {
+    background: linear-gradient(135deg, #3a3530 0%, #2a251f 100%);
+    color: #fdfcfa;
+    border-radius: 10px;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 8px rgba(58,53,48,0.2);
+    font-family: 'Lato', sans-serif;
+  }
+
+  .melakarta-name {
+    font-size: 19px;
+    font-weight: 600;
+    color: #3a3530;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 0.5px;
+  }
+
+  .melakarta-swaras {
+    font-size: 13px;
+    color: #6b635a;
+    line-height: 2;
+    letter-spacing: 0.3px;
+    padding-left: 4px;
+  }
+
+  .melakarta-swaras strong {
+    color: #3a3530;
+    font-weight: 600;
+    display: inline-block;
+    min-width: 100px;
+  }
+
+  .loading {
+    text-align: center;
+    color: #8b7e74;
+    padding: 40px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 30px 20px;
+      border-radius: 16px;
+    }
+    
+    h1 {
+      font-size: 28px;
+    }
+
+    .white-key {
+      width: 52px;
+      height: 220px;
+    }
+
+    .black-key {
+      width: 36px;
+      height: 140px;
+    }
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(58, 53, 48, 0.5);
+    backdrop-filter: blur(6px);
+  }
+
+  .modal-content {
+    background: linear-gradient(145deg, #fdfcfa 0%, #faf8f3 100%);
+    margin: 8% auto;
+    padding: 40px;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 520px;
+    box-shadow: 
+      0 20px 60px rgba(0,0,0,0.15),
+      0 0 1px rgba(0,0,0,0.1);
+    border: 1.5px solid rgba(232,223,208,0.8);
+    position: relative;
+  }
+
+  .modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: radial-gradient(circle at top center, rgba(218,165,105,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    border-radius: 24px;
+  }
+
+  .modal-content h3 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    color: #3a3530;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 30px;
+  }
+
+  .swara-list {
+    list-style-type: none;
+    padding: 0;
+    font-size: 15px;
+    text-align: center;
+    color: #6b635a;
+    font-weight: 400;
+  }
+
+  .swara-list li {
+    padding: 10px 0;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+  }
+
+  .swara-list li:hover {
+    background: rgba(245,241,232,0.4);
+    color: #3a3530;
+  }
+
+  .close {
+    color: #8b7e74;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 32px;
+    font-weight: 300;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .close:hover {
+    color: #3a3530;
+    background: rgba(232,223,208,0.3);
+    transform: rotate(90deg);
+  }
+
+  .highlight {
+    background: linear-gradient(120deg, rgba(245,241,232,0.6) 0%, rgba(232,223,208,0.4) 100%);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: #3a3530;
+  }
+
+  /* Custom scrollbar */
+  .results::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .results::-webkit-scrollbar-track {
+    background: rgba(240,235,227,0.5);
+    border-radius: 10px;
+  }
+
+  .results::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d4cabe 0%, #bfb3a3 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(249,247,244,0.5);
+  }
+
+  .results::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #bfb3a3 0%, #a89884 100%);
+  }
+
+  #piano-wrapper::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  #piano-wrapper::-webkit-scrollbar-track {
+    background: rgba(240,235,227,0.5);
+    border-radius: 10px;
+  }
+
+  #piano-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #d4cabe 0%, #bfb3a3 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(249,247,244,0.5);
+  }
+
+  #piano-wrapper::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #bfb3a3 0%, #a89884 100%);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>
+    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#8b7e74" stroke-width="1.5" style="vertical-align: middle; margin-right: 10px;">
+      <path d="M9 18V5l12-2v13"></path>
+      <circle cx="6" cy="18" r="3"></circle>
+      <circle cx="18" cy="16" r="3"></circle>
+    </svg>
+    Melakarta Raga Finder
+  </h1>
+  <p class="subtitle">✦ Where Western keys unlock ancient Carnatic scales ✦</p>
+  
+  <div class="controls">
+    <button class="btn btn-primary" onclick="findMelakartas()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      Find Melakartas
+    </button>
+    <button class="btn btn-secondary" onclick="clearSwaras()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;">
+        <path d="M3 6h18"></path>
+        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+      </svg>
+      Clear Selection
+    </button>
+    <button id="swaraMapBtn" class="btn btn-secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;">
+        <path d="M9 18V5l12-2v13"></path>
+        <circle cx="6" cy="18" r="3"></circle>
+        <circle cx="18" cy="16" r="3"></circle>
+      </svg>
+      Swara Reference
+    </button>
+  </div>
+
+  <div class="swara-display">
+    <div class="swara-label">Selected Swaras</div>
+    <div class="swara-tags" id="swara-tags">
+      <span style="color: #8b7e74; font-style: italic; font-size: 13px;">Select notes from the keyboard below</span>
+    </div>
+  </div>
+
+  <div id="piano-wrapper">
+    <div id="piano"></div>
+  </div>
+
+  <div class="results" id="results">
+    <h2>Matching Melakartas (<span id="match-count">0</span>)</h2>
+    <div id="results-content" class="no-results">
+      Select notes and click "Find Melakartas" to discover matching ragas
+    </div>
+  </div>
+</div>
+
+<!-- Swara Map Modal -->
+<div id="swaraModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Western to Carnatic Swara Mapping</h3>
+    <ul class="swara-list">
+      <li>C → SA</li>
+      <li>C# → R1</li>
+      <li>D → R2, G1</li>
+      <li>D# → G2, R3</li>
+      <li>E → G3</li>
+      <li>F → M1</li>
+      <li>F# → M2</li>
+      <li>G → PA</li>
+      <li>G# → D1</li>
+      <li>A → D2, N1</li>
+      <li>A# → N2, D3</li>
+      <li>B → N3</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+// Note to Swara mapping (12 notes to 16 swarasthanas)
+const noteToSwara = {
+  'C': ['Sa'],
+  'C#': ['R1'],
+  'D': ['R2', 'G1'],
+  'D#': ['R3', 'G2'],
+  'E': ['G3'],
+  'F': ['M1'],
+  'F#': ['M2'],
+  'G': ['Pa'],
+  'G#': ['D1'],
+  'A': ['D2', 'N1'],
+  'A#': ['D3', 'N2'],
+  'B': ['N3']
+};
+
+const whiteKeys = ['C','D','E','F','G','A','B'];
+const blackKeys = ['C#','D#','F#','G#','A#'];
+const keyOffsets = { 'C#':0, 'D#':1, 'F#':3, 'G#':4, 'A#':5 };
+const octaves = 2;
+
+const piano = document.getElementById('piano');
+const playedSwaras = new Set();
+
+// Create piano keys with only Hindustani note names
+for (let o=0; o<octaves; o++) {
+  whiteKeys.forEach((note,i)=>{
+    const key = document.createElement('div');
+    key.className='white-key';
+    const noteWithOctave = note + (o+4);
+    key.dataset.note = noteWithOctave;
+    key.dataset.baseNote = note;
+    
+    const label = document.createElement('div');
+    label.className='key-label';
+    label.textContent = note;
+    
+    key.appendChild(label);
+    piano.appendChild(key);
+  });
+}
+
+for (let o=0; o<octaves; o++) {
+  blackKeys.forEach(note=>{
+    const key=document.createElement('div');
+    key.className='black-key';
+    const noteWithOctave = note + (o+4);
+    key.dataset.note = noteWithOctave;
+    key.dataset.baseNote = note;
+    key.style.left=`${o*7*66 + 64*keyOffsets[note]+47}px`;
+    
+    const label = document.createElement('div');
+    label.className='key-label';
+    label.textContent = note;
+    
+    key.appendChild(label);
+    piano.appendChild(key);
+  });
+}
+
+// Web Audio API
+const AudioCtx = window.AudioContext||window.webkitAudioContext;
+const audioCtx = new AudioCtx();
+
+function playNote(note){
+  const frequencies = {
+    'C':261.63,'C#':277.18,'D':293.66,'D#':311.13,
+    'E':329.63,'F':349.23,'F#':369.99,'G':392.00,
+    'G#':415.30,'A':440.00,'A#':466.16,'B':493.88
+  };
+
+  const baseNote = note.replace(/[0-9]/g,'');
+  const octaveMatch = note.match(/[0-9]/);
+  const octave = octaveMatch ? parseInt(octaveMatch[0]) : 4;
+  
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.type='triangle';
+  osc.frequency.value = frequencies[baseNote] * Math.pow(2, octave - 4);
+
+  const now = audioCtx.currentTime;
+  gain.gain.setValueAtTime(0,now);
+  gain.gain.linearRampToValueAtTime(0.3, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+
+  osc.start(now);
+  osc.stop(now+1.2);
+}
+
+function updateSwaraDisplay() {
+  const container = document.getElementById('swara-tags');
+  container.innerHTML = '';
+
+  if (playedSwaras.size === 0) {
+    container.innerHTML = '<span style="color: #8b7e74; font-style: italic; font-size: 13px;">Select notes from the keyboard below</span>';
+    return;
+  }
+
+  const sortedNotes = Array.from(playedSwaras).sort();
+  sortedNotes.forEach(note => {
+    const swaras = noteToSwara[note] || [note];
+    const primarySwara = swaras[0];
+    const allSwaraText = swaras.join(', ');
+
+    const tag = document.createElement('span');
+    tag.className = 'swara-tag';
+    tag.textContent = `${primarySwara} (${allSwaraText})`;
+    container.appendChild(tag);
+  });
+}
+
+// Click events on piano keys
+document.querySelectorAll('#piano div').forEach(key=>{
+  key.addEventListener('click', function() {
+    const note = this.dataset.note;
+    const baseNote = this.dataset.baseNote;
+
+    playNote(note);
+
+    this.classList.add('active');
+    setTimeout(() => this.classList.remove('active'), 200);
+
+    playedSwaras.add(baseNote);
+    
+    updateSwaraDisplay();
+  });
+});
+
+function clearSwaras() {
+  playedSwaras.clear();
+  updateSwaraDisplay();
+  document.getElementById('results-content').innerHTML = 
+    '<div class="no-results">Select notes and click "Find Melakartas" to discover matching ragas</div>';
+  document.getElementById('match-count').textContent = '0';
+}
+
+function cartesianProduct(arrays) {
+  return arrays.reduce((acc, curr) => {
+    const res = [];
+    acc.forEach(a => {
+      curr.forEach(b => {
+        res.push(a.concat([b]));
+      });
+    });
+    return res;
+  }, [[]]);
+}
+
+async function findMelakartas() {
+  if (playedSwaras.size === 0) {
+    alert('Please select some notes first');
+    return;
+  }
+
+  const resultsContent = document.getElementById('results-content');
+  resultsContent.innerHTML = '<div class="loading">Searching for matching Melakartas...</div>';
+
+  try {
+    const swaraOptions = [];
+
+    playedSwaras.forEach(baseNote => {
+      if (noteToSwara[baseNote]) {
+        swaraOptions.push(noteToSwara[baseNote]);
+      }
+    });
+
+    const allCombinations = cartesianProduct(swaraOptions);
+    const uniqueSwaraSets = [];
+
+    for (const combo of allCombinations) {
+      const set = Array.from(new Set(combo)).sort();
+      uniqueSwaraSets.push(set);
+    }
+
+    // Call backend with all combinations
+    const response = await fetch('/api/find-melakartas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ swarasets: uniqueSwaraSets })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      resultsContent.innerHTML = `<div class="no-results">Error: ${data.error}</div>`;
+      return;
+    }
+
+    document.getElementById('match-count').textContent = data.count;
+
+    if (data.matches.length === 0) {
+      resultsContent.innerHTML =
+        '<div class="no-results">No matching Melakartas found for the selected notes.<br>Try a different combination.</div>';
+      return;
+    }
+
+    resultsContent.innerHTML = '';
+    data.matches.forEach(melakarta => {
+      const card = document.createElement('div');
+      card.className = 'melakarta-card';
+      card.innerHTML = `
+        <div class="melakarta-header">
+          <div class="melakarta-number">${melakarta.display_number}</div>
+          <div class="melakarta-name">${melakarta.raaga_name}</div>
+        </div>
+        <div class="melakarta-swaras">
+          <strong>Arohanam:</strong> ${melakarta.arohanam}<br>
+          <strong>Avarohanam:</strong> ${melakarta.avarohanam}
+        </div>
+      `;
+      resultsContent.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error('Error:', error);
+    resultsContent.innerHTML =
+      '<div class="no-results">Error fetching results. Please try again.</div>';
+  }
+}
+
+// Swara Map Modal Logic
+const modal = document.getElementById("swaraModal");
+const btn = document.getElementById("swaraMapBtn");
+const span = document.querySelector(".modal .close");
+
+btn.onclick = function () {
+  modal.style.display = "block";
+};
+
+span.onclick = function () {
+  modal.style.display = "none";
+};
+
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+</script>
+
+</body>
+</html>
