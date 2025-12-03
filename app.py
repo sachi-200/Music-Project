@@ -5,10 +5,13 @@ import tempfile
 import numpy as np
 import mysql.connector, os, google.generativeai as genai
 from gradio_client import Client, file as gradio_file
+import re
+from fuzzywuzzy import fuzz
+from mysql.connector import connect
 
 app = Flask(__name__)
 
-genai.configure(api_key="AIzaSyCGobOd3lP0pl4nskjGaMmLvgHGJSyzLQc")
+genai.configure(api_key="")
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 HOST = "localhost"
@@ -434,12 +437,130 @@ def find_melakartas():
         print(f"Error: {e}")
         return jsonify({'error': str(e)}), 500
     
+# @app.route("/chat", methods=["POST"])
+# def chat():
+#     data = request.get_json()
+#     history = data.get("history", [])
+#     convo = model.start_chat(history=history)
+
+#     try:
+#         user_msg = history[-1]["parts"][0]["text"].strip()
+
+#         # 🩵 Friendly replies for short greetings
+#         if len(user_msg) < 4 or re.match(r"^(hi|hello|hey|yo|hola|namaste)\b", user_msg.lower()):
+#             return jsonify({"reply": "Hello 👋! I’m your Carnatic music assistant. Ask me about any rāga, its scale, or its Janya rāgas."})
+
+#         # --- Connect to DB ---
+#         conn = connect(
+#             host="localhost",
+#             user="root",              # ⚙️ adjust if needed
+#             password="Matilda+10",    # ⚙️ your MySQL password
+#             database="musicproject"
+
+#             # HOST = "localhost"
+#             # USER = "trishra"
+#             # PASSWORD = "ASV@music2025"
+#             # DATABASE = "music_project"
+#         )
+#         cursor = conn.cursor(dictionary=True)
+
+#         # --- Fetch all Melakarta names ---
+#         cursor.execute("SELECT raaga_name, melakartha_number FROM melakartas")
+#         all_melakartas = cursor.fetchall()
+
+#         detected_mela = None
+#         mela_number = None
+#         best_score = 0
+
+#         # --- Fuzzy match user text to Melakarta name ---
+#         for mela in all_melakartas:
+#             mela_name = mela["raaga_name"]
+#             score = fuzz.partial_ratio(user_msg.lower(), mela_name.lower())
+#             if score > best_score and score >= 85:
+#                 detected_mela = mela_name
+#                 mela_number = mela["melakartha_number"]
+#                 best_score = score
+
+#         if detected_mela:
+#             # --- Get Melakarta info ---
+#             cursor.execute("""
+#                 SELECT 
+#                     m.melakartha_number,
+#                     m.raaga_name,
+#                     m.arohanam,
+#                     m.avarohanam,
+#                     ma.audio_path
+#                 FROM melakartas m
+#                 LEFT JOIN melakarta_audio ma 
+#                 ON m.melakartha_number = ma.melakartha_number
+#                 WHERE m.melakartha_number = %s
+#             """, (mela_number,))
+#             mela_data = cursor.fetchone()
+
+#             # --- Try fetching Janya rāgas safely ---
+#             try:
+#                 cursor.execute(f"""
+#                     SELECT 
+#                         raga_number,
+#                         janya_raga_name,
+#                         arohanam,
+#                         avarohanam,
+#                         audio_path_arohanam,
+#                         audio_path_avarohanam
+#                     FROM `{detected_mela}`
+#                 """)
+#                 janyas = cursor.fetchall()
+#             except Exception as e:
+#                 print(f"⚠️ No Janya table found for {detected_mela}: {e}")
+#                 janyas = []
+
+#             # --- Build context ---
+#             if not janyas:
+#                 context = (
+#                     f"You are a Carnatic music assistant.\n\n"
+#                     f"The Melakarta rāga **{detected_mela}** exists in the database, "
+#                     "but no Janya (derived) rāgas are currently listed for it.\n\n"
+#                     f"• Aarohanam: {mela_data['arohanam']}\n"
+#                     f"• Avarohanam: {mela_data['avarohanam']}\n"
+#                     f"• Audio sample: {mela_data['audio_path'] or 'Not available'}\n\n"
+#                     "Respond politely and informatively if the user asks about this rāga or its Janya rāgas."
+#                 )
+#             else:
+#                 janya_names = [r["janya_raga_name"] for r in janyas]
+#                 context = (
+#                     f"You are a Carnatic music assistant.\n\n"
+#                     f"Here’s detailed information about **{detected_mela}**:\n"
+#                     f"• Aarohanam: {mela_data['arohanam']}\n"
+#                     f"• Avarohanam: {mela_data['avarohanam']}\n"
+#                     f"• Audio sample: {mela_data['audio_path'] or 'Not available'}\n\n"
+#                     f"Janya Rāgas derived from this Melakarta include: {', '.join(janya_names)}.\n\n"
+#                     "Answer the user’s query accurately based on this context."
+#                 )
+
+#         else:
+#             # --- Generic fallback context ---
+#             context = (
+#                 "You are a Carnatic music assistant. The database includes all 72 Melakarta rāgas "
+#                 "in the `melakartas` table, each with Aarohanam, Avarohanam, and audio paths, plus separate "
+#                 "tables for their Janya rāgas. Answer questions about Carnatic rāgas and scales accurately."
+#             )
+
+#         cursor.close()
+#         conn.close()
+
+#         # --- Build prompt for Gemini ---
+#         full_prompt = f"{context}\n\nUser: {user_msg}"
+#         response = convo.send_message(full_prompt)
+
+#         print("🎵 Gemini Response:", response.text)
+#         return jsonify({"reply": response.text})
+
+#     except Exception as e:
+#         print("❌ Error:", e)
+#         return jsonify({"reply": f"Error: {str(e)}"}), 500
+
 @app.route("/chat", methods=["POST"])
 def chat():
-    import re
-    from fuzzywuzzy import fuzz
-    from mysql.connector import connect
-
     data = request.get_json()
     history = data.get("history", [])
     convo = model.start_chat(history=history)
@@ -454,8 +575,8 @@ def chat():
         # --- Connect to DB ---
         conn = connect(
             host="localhost",
-            user="root",              # ⚙️ adjust if needed
-            password="Matilda+10",    # ⚙️ your MySQL password
+            user="root",
+            password="Matilda+10",
             database="musicproject"
         )
         cursor = conn.cursor(dictionary=True)
@@ -467,6 +588,7 @@ def chat():
         detected_mela = None
         mela_number = None
         best_score = 0
+        janya_match = None
 
         # --- Fuzzy match user text to Melakarta name ---
         for mela in all_melakartas:
@@ -477,8 +599,24 @@ def chat():
                 mela_number = mela["melakartha_number"]
                 best_score = score
 
-        if detected_mela:
-            # --- Get Melakarta info ---
+        # --- If not found, check Janya rāgas across all Melakartas ---
+        if not detected_mela:
+            for mela in all_melakartas:
+                mela_name = mela["raaga_name"]
+                try:
+                    cursor.execute(f"SELECT * FROM `{mela_name}`")
+                    janyas = cursor.fetchall()
+                    for j in janyas:
+                        score = fuzz.partial_ratio(user_msg.lower(), j["janya_raga_name"].lower())
+                        if score > best_score and score >= 85:
+                            detected_mela = mela_name
+                            janya_match = j
+                            best_score = score
+                except:
+                    continue
+
+        # --- Build context ---
+        if detected_mela and not janya_match:
             cursor.execute("""
                 SELECT 
                     m.melakartha_number,
@@ -493,24 +631,20 @@ def chat():
             """, (mela_number,))
             mela_data = cursor.fetchone()
 
-            # --- Try fetching Janya rāgas safely ---
             try:
                 cursor.execute(f"""
                     SELECT 
-                        raga_number,
                         janya_raga_name,
                         arohanam,
                         avarohanam,
                         audio_path_arohanam,
                         audio_path_avarohanam
-                    FROM `{detected_mela.lower()}`
+                    FROM `{detected_mela}`
                 """)
                 janyas = cursor.fetchall()
-            except Exception as e:
-                print(f"⚠️ No Janya table found for {detected_mela}: {e}")
+            except:
                 janyas = []
 
-            # --- Build context ---
             if not janyas:
                 context = (
                     f"You are a Carnatic music assistant.\n\n"
@@ -518,8 +652,7 @@ def chat():
                     "but no Janya (derived) rāgas are currently listed for it.\n\n"
                     f"• Aarohanam: {mela_data['arohanam']}\n"
                     f"• Avarohanam: {mela_data['avarohanam']}\n"
-                    f"• Audio sample: {mela_data['audio_path'] or 'Not available'}\n\n"
-                    "Respond politely and informatively if the user asks about this rāga or its Janya rāgas."
+                    # f"• Audio sample: {mela_data['audio_path'] or 'Not available'}"
                 )
             else:
                 janya_names = [r["janya_raga_name"] for r in janyas]
@@ -528,17 +661,24 @@ def chat():
                     f"Here’s detailed information about **{detected_mela}**:\n"
                     f"• Aarohanam: {mela_data['arohanam']}\n"
                     f"• Avarohanam: {mela_data['avarohanam']}\n"
-                    f"• Audio sample: {mela_data['audio_path'] or 'Not available'}\n\n"
-                    f"Janya Rāgas derived from this Melakarta include: {', '.join(janya_names)}.\n\n"
-                    "Answer the user’s query accurately based on this context."
+                    # f"• Audio sample: {mela_data['audio_path'] or 'Not available'}\n\n"
+                    f"Janya Rāgas derived from this Melakarta include: {', '.join(janya_names)}."
                 )
 
+        elif janya_match:
+            context = (
+                f"You are a Carnatic music assistant.\n\n"
+                f"The rāga **{janya_match['janya_raga_name']}** is a *Janya* (derived) rāga of **{detected_mela}**.\n"
+                f"• Aarohanam: {janya_match['arohanam']}\n"
+                f"• Avarohanam: {janya_match['avarohanam']}\n"
+                # f"• Audio (Aarohanam): {janya_match['audio_path_arohanam'] or 'Not available'}\n"
+                # f"• Audio (Avarohanam): {janya_match['audio_path_avarohanam'] or 'Not available'}"
+            )
+
         else:
-            # --- Generic fallback context ---
             context = (
                 "You are a Carnatic music assistant. The database includes all 72 Melakarta rāgas "
-                "in the `melakartas` table, each with Aarohanam, Avarohanam, and audio paths, plus separate "
-                "tables for their Janya rāgas. Answer questions about Carnatic rāgas and scales accurately."
+                "and their Janya rāgas. Answer questions about any rāga or its scale accurately."
             )
 
         cursor.close()
@@ -554,50 +694,6 @@ def chat():
     except Exception as e:
         print("❌ Error:", e)
         return jsonify({"reply": f"Error: {str(e)}"}), 500
-
-# 🎼 Static dictionary for rāgas and their swarasthanas
-RAGA_SWARASTHANAS = {
-    "Mayamalavagowla": {
-        "arohanam": "S R1 G3 M1 P D1 N3 S",
-        "avarohanam": "S N3 D1 P M1 G3 R1 S"
-    },
-    "Kalyani": {
-        "arohanam": "S R2 G3 M2 P D2 N3 S",
-        "avarohanam": "S N3 D2 P M2 G3 R2 S"
-    },
-    "Karaharapriya": {
-        "arohanam": "S R2 G2 M1 P D2 N2 S",
-        "avarohanam": "S N2 D2 P M1 G2 R2 S"
-    },
-    "Vachaspati": {
-        "arohanam": "S R2 G3 M2 P D2 N3 S",
-        "avarohanam": "S N3 D2 P M2 G3 R2 S"
-    },
-    "Todi": {
-        "arohanam": "S R1 G2 M1 P D1 N2 S",
-        "avarohanam": "S N2 D1 P M1 G2 R1 S"
-    },
-    "Shankarabharanam": {
-        "arohanam": "S R2 G3 M1 P D2 N3 S",
-        "avarohanam": "S N3 D2 P M1 G3 R2 S"
-    },
-    "Kharaharapriya": {
-        "arohanam": "S R2 G2 M1 P D2 N2 S",
-        "avarohanam": "S N2 D2 P M1 G2 R2 S"
-    },
-    "Bhairavi": {
-        "arohanam": "S R2 G2 M1 P D2 N2 S",
-        "avarohanam": "S N2 D1 P M1 G2 R2 S"
-    },
-    "Saveri": {
-        "arohanam": "S R1 M1 P D1 S",
-        "avarohanam": "S N2 D1 P M1 G3 R1 S"
-    },
-    "Kambhoji": {
-        "arohanam": "S R2 G3 M1 P D2 S",
-        "avarohanam": "S N2 D2 P M1 G3 R2 S"
-    },
-}
 
 @app.route("/api/analyze-audio", methods=["POST"])
 def analyze_audio():
@@ -621,29 +717,154 @@ def analyze_audio():
 
         confidences = result.get("confidences", []) if isinstance(result, dict) else result
 
-        # Filter and attach swarasthanas dynamically
-        filtered = []
+        # Filter by confidence threshold (>20%)
+        filtered_ragas = []
         for c in confidences:
             if c.get("confidence", 0) > 0.2:
-                name = c["label"].strip()
-                info = RAGA_SWARASTHANAS.get(name, {
-                    "arohanam": "Not available",
-                    "avarohanam": "Not available"
-                })
-                filtered.append({
-                    "raaga_name": name,
-                    "confidence": round(c["confidence"] * 100, 2),
-                    "arohanam": info["arohanam"],
-                    "avarohanam": info["avarohanam"]
+                filtered_ragas.append({
+                    "name": c["label"].strip(),
+                    "confidence": round(c["confidence"] * 100, 2)
                 })
 
-        if not filtered:
+        if not filtered_ragas:
             return jsonify({"ragas": [], "message": "No rāgas with >20% confidence"}), 200
 
+        # 🔥 NEW: Query chatbot for each rāga's details
+        raga_details_list = []
+        for raga_info in filtered_ragas:
+            raga_name = raga_info["name"]
+            confidence = raga_info["confidence"]
+            
+            # --- Connect to DB ---
+            conn = connect(
+                host="localhost",
+                user="root",              # ⚙️ adjust if needed
+                password="Matilda+10",    # ⚙️ your MySQL password
+                database="musicproject"
+
+                # HOST = "localhost"
+                # USER = "trishra"
+                # PASSWORD = "ASV@music2025"
+                # DATABASE = "music_project"
+            )
+            cursor = conn.cursor(dictionary=True)
+
+            # --- Fetch all Melakarta names ---
+            cursor.execute("SELECT raaga_name, melakartha_number FROM melakartas")
+            all_melakartas = cursor.fetchall()
+
+            detected_mela = None
+            mela_number = None
+            best_score = 0
+
+            # --- Fuzzy match user text to Melakarta name ---
+            for mela in all_melakartas:
+                mela_name = mela["raaga_name"]
+                score = fuzz.partial_ratio(raga_name.lower(), mela_name.lower())
+                if score > best_score and score >= 85:
+                    detected_mela = mela_name
+                    mela_number = mela["melakartha_number"]
+                    best_score = score
+
+            if detected_mela:
+                # --- Get Melakarta info ---
+                cursor.execute("""
+                    SELECT 
+                        m.melakartha_number,
+                        m.raaga_name,
+                        m.arohanam,
+                        m.avarohanam,
+                        ma.audio_path
+                    FROM melakartas m
+                    LEFT JOIN melakarta_audio ma 
+                    ON m.melakartha_number = ma.melakartha_number
+                    WHERE m.melakartha_number = %s
+                """, (mela_number,))
+                mela_data = cursor.fetchone()
+
+                # --- Try fetching Janya rāgas safely ---
+                try:
+                    cursor.execute(f"""
+                        SELECT 
+                            raga_number,
+                            janya_raga_name,
+                            arohanam,
+                            avarohanam,
+                            audio_path_arohanam,
+                            audio_path_avarohanam
+                        FROM `{detected_mela}`
+                    """)
+                    janyas = cursor.fetchall()
+                except Exception as e:
+                    print(f"⚠️ No Janya table found for {detected_mela}: {e}")
+                    janyas = []
+
+                # --- Build context ---
+                if not janyas:
+                    context = (
+                        f"You are a Carnatic music assistant.\n\n"
+                        f"The Melakarta rāga **{detected_mela}** exists in the database, "
+                        "but no Janya (derived) rāgas are currently listed for it.\n\n"
+                        f"• Aarohanam: {mela_data['arohanam']}\n"
+                        f"• Avarohanam: {mela_data['avarohanam']}\n"
+                        f"• Audio sample: {mela_data['audio_path'] or 'Not available'}\n\n"
+                        "Respond politely and informatively if the user asks about this rāga or its Janya rāgas."
+                    )
+                else:
+                    janya_names = [r["janya_raga_name"] for r in janyas]
+                    context = (
+                        f"You are a Carnatic music assistant.\n\n"
+                        f"Here’s detailed information about **{detected_mela}**:\n"
+                        f"• Aarohanam: {mela_data['arohanam']}\n"
+                        f"• Avarohanam: {mela_data['avarohanam']}\n"
+                        f"• Audio sample: {mela_data['audio_path'] or 'Not available'}\n\n"
+                        f"Janya Rāgas derived from this Melakarta include: {', '.join(janya_names)}.\n\n"
+                        "Answer the user’s query accurately based on this context."
+                    )
+
+            else:
+                # --- Generic fallback context ---
+                context = (
+                    "You are a Carnatic music assistant. The database includes all 72 Melakarta rāgas "
+                    "in the `melakartas` table, each with Aarohanam, Avarohanam, and audio paths, plus separate "
+                    "tables for their Janya rāgas. Answer questions about Carnatic rāgas and scales accurately."
+                )
+
+            cursor.close()
+            conn.close()
+
+            # --- Build prompt for Gemini ---
+            full_prompt = f"{context}\n\nUser: {raga_name}"
+            
+            try:
+                # Start a fresh conversation for each query
+                convo = model.start_chat(history=[])
+                response = convo.send_message(full_prompt)
+                chatbot_response_text = response.text.strip()
+                
+                print(f"🤖 Chatbot response for {raga_name}:")
+                print(chatbot_response_text)
+                
+                # Store the raw chatbot response
+                raga_details_list.append({
+                    "raaga_name": raga_name,
+                    "confidence": confidence,
+                    "chatbot_details": chatbot_response_text  # Raw string from chatbot
+                })
+                
+            except Exception as e:
+                print(f"❌ Chatbot error for {raga_name}: {e}")
+                # Fallback if chatbot fails
+                raga_details_list.append({
+                    "raaga_name": raga_name,
+                    "confidence": confidence,
+                    "chatbot_details": f"Could not retrieve details for {raga_name}. Error: {str(e)}"
+                })
+
         return jsonify({
-            "ragas": filtered,
-            "count": len(filtered),
-            "message": "Top predicted rāgas with their swarasthanas"
+            "ragas": raga_details_list,
+            "count": len(raga_details_list),
+            "message": "Rāgas analyzed with chatbot-generated details"
         })
 
     except Exception as e:
