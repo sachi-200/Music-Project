@@ -30,6 +30,7 @@ header {
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 15px rgba(139,115,85,0.15);
   border-bottom: 1px solid rgba(139,115,85,0.1);
+  position: relative;  /* ADD THIS LINE */
 }
 
 header h1 { 
@@ -47,7 +48,36 @@ header p {
   color: #a0826d;
   letter-spacing: 1px;
 }
+.home-btn {
+  position: absolute;
+  top: 1rem;
+  left: 2rem;
+  background: linear-gradient(135deg, #c9a77c, #b8956f);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  border-radius: 25px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 10px rgba(139,115,85,0.2);
+  text-decoration: none;
+  z-index: 100;
+}
 
+.home-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(139,115,85,0.3);
+  background: linear-gradient(135deg, #d4b58d, #c3a580);
+}
+
+.home-btn i {
+  font-size: 1rem;
+}
 .main-container {
   flex: 1;
   padding: 1rem 2rem;
@@ -673,8 +703,1586 @@ footer {
 </head>
 <body>
 <header>
-<h1>RāgaSamhita</h1>
-<p>The Collection of Ragas</p>
+  <a href="/" class="home-btn">
+  <i class="fas fa-home"></i>
+  <span>Back to home</span>
+</a>
+  <h1>RāgaSamhita</h1>
+  <p>The Collection of Ragas</p>
+</header>
+
+<div class="main-container">
+<div class="chakras-grid" id="chakrasContainer"></div>
+</div>
+
+<div class="modal" id="swarasModal">
+<div class="modal-content">
+<span class="close" onclick="closeModal()">&times;</span>
+<span class="back-btn" id="backBtn" style="display:none;" onclick="goBackToMelakarta()"><i class="fas fa-arrow-left"></i></span>
+<h3 id="modalTitle">Raga</h3>
+
+<div id="mainContent">
+<div class="full-raga-section" id="janyaBtnSection">
+<button class="play-full-btn janya-btn" id="showJanyaBtn" onclick="showJanyaRagas()">
+<i class="fas fa-list-music"></i>
+<span>Show Janya Ragas</span>
+</button>
+</div>
+
+<div class="section-divider"></div>
+
+<div class="modal-section-title">Individual Swarasthanas</div>
+<div class="swaras-grid" id="swarasGrid"></div>
+
+<div class="section-divider"></div>
+
+<div class="full-raga-section">
+<div class="modal-section-title">Complete Melakarta</div>
+<div class="speed-control-container">
+<div class="speed-buttons" id="fullRagaSpeedButtons">
+<button class="speed-btn" data-speed="0.5">0.5x</button>
+<button class="speed-btn" data-speed="0.75">0.75x</button>
+<button class="speed-btn active" data-speed="1">1x</button>
+<button class="speed-btn" data-speed="1.5">1.5x</button>
+<button class="speed-btn" data-speed="2">2x</button>
+</div>
+<div class="custom-speed-container">
+<span class="custom-speed-label">Custom:</span>
+<input type="number" class="custom-speed-input" id="fullRagaCustomSpeed" placeholder="1.0" min="0.1" max="4" step="0.1">
+</div>
+</div>
+<button class="play-full-btn" id="playFullBtn" onclick="toggleFullRaga()">
+<i class="fas fa-play-circle"></i>
+<span id="playBtnText">Play</span>
+</button>
+<audio id="fullRagaAudio"></audio>
+</div>
+
+<div class="section-divider"></div>
+
+<div class="full-raga-section">
+<div class="modal-section-title">Keyboard Recording - Complete Melakarta</div>
+<div class="speed-control-container">
+<div class="speed-buttons" id="keyboardMelakartaSpeedButtons">
+<button class="speed-btn" data-speed="0.5">0.5x</button>
+<button class="speed-btn" data-speed="0.75">0.75x</button>
+<button class="speed-btn active" data-speed="1">1x</button>
+<button class="speed-btn" data-speed="1.5">1.5x</button>
+<button class="speed-btn" data-speed="2">2x</button>
+</div>
+<div class="custom-speed-container">
+<span class="custom-speed-label">Custom:</span>
+<input type="number" class="custom-speed-input" id="keyboardMelakartaCustomSpeed" placeholder="1.0" min="0.1" max="4" step="0.1">
+</div>
+</div>
+<button class="play-full-btn" id="playKeyboardMelakartaBtn" onclick="toggleKeyboardMelakartaAudio()">
+<i class="fas fa-play-circle"></i>
+<span id="playKeyboardMelakartaBtnText">Play</span>
+</button>
+<audio id="keyboardMelakartaAudio"></audio>
+</div>
+</div>
+
+<div id="janyaContent" style="display:none;">
+<div class="loading" id="janyaLoading">Loading Janya Ragas...</div>
+<div class="no-data" id="noJanyaData" style="display:none;">No Janya Ragas found for this Melakarta</div>
+<div class="janya-list" id="janyaList"></div>
+</div>
+
+<div id="janyaDetailContent" style="display:none;">
+<div class="modal-section-title">Arohanam - Individual Swarasthanas</div>
+<div class="swaras-grid" id="arohanamSwarasGrid"></div>
+
+<div class="section-divider"></div>
+
+<div class="full-raga-section">
+<div class="modal-section-title">Complete Arohanam</div>
+<div class="speed-control-container">
+<div class="speed-buttons" id="arohanamSpeedButtons">
+<button class="speed-btn" data-speed="0.5">0.5x</button>
+<button class="speed-btn" data-speed="0.75">0.75x</button>
+<button class="speed-btn active" data-speed="1">1x</button>
+<button class="speed-btn" data-speed="1.5">1.5x</button>
+<button class="speed-btn" data-speed="2">2x</button>
+</div>
+<div class="custom-speed-container">
+<span class="custom-speed-label">Custom:</span>
+<input type="number" class="custom-speed-input" id="arohanamCustomSpeed" placeholder="1.0" min="0.1" max="4" step="0.1">
+</div>
+</div>
+<button class="play-full-btn" id="playArohanamBtn" onclick="toggleJanyaArohanamAudio()">
+<i class="fas fa-play-circle"></i>
+<span id="playArohanamBtnText">Play</span>
+</button>
+<audio id="arohanamAudio"></audio>
+</div>
+
+<div class="section-divider"></div>
+
+<div class="full-raga-section">
+<div class="modal-section-title">Keyboard Recording - Arohanam</div>
+<div class="speed-control-container">
+<div class="speed-buttons" id="keyboardArohanamSpeedButtons">
+<button class="speed-btn" data-speed="0.5">0.5x</button>
+<button class="speed-btn" data-speed="0.75">0.75x</button>
+<button class="speed-btn active" data-speed="1">1x</button>
+<button class="speed-btn" data-speed="1.5">1.5x</button>
+<button class="speed-btn" data-speed="2">2x</button>
+</div>
+<div class="custom-speed-container">
+<span class="custom-speed-label">Custom:</span>
+<input type="number" class="custom-speed-input" id="keyboardArohanamCustomSpeed" placeholder="1.0" min="0.1" max="4" step="0.1">
+</div>
+</div>
+<button class="play-full-btn" id="playKeyboardArohanamBtn" onclick="toggleKeyboardArohanamAudio()">
+<i class="fas fa-play-circle"></i>
+<span id="playKeyboardArohanamBtnText">Play</span>
+</button>
+<audio id="keyboardArohanamAudio"></audio>
+</div>
+
+<div class="section-divider"></div>
+
+<div class="modal-section-title">Avarohanam - Individual Swarasthanas</div>
+<div class="swaras-grid" id="avarohanamSwarasGrid"></div>
+
+<div class="section-divider"></div>
+
+<div class="full-raga-section">
+<div class="modal-section-title">Complete Avarohanam</div>
+<div class="speed-control-container">
+<div class="speed-buttons" id="avarohanamSpeedButtons">
+<button class="speed-btn" data-speed="0.5">0.5x</button>
+<button class="speed-btn" data-speed="0.75">0.75x</button>
+<button class="speed-btn active" data-speed="1">1x</button>
+<button class="speed-btn" data-speed="1.5">1.5x</button>
+<button class="speed-btn" data-speed="2">2x</button>
+</div>
+<div class="custom-speed-container">
+<span class="custom-speed-label">Custom:</span>
+<input type="number" class="custom-speed-input" id="avarohanamCustomSpeed" placeholder="1.0" min="0.1" max="4" step="0.1">
+</div>
+</div>
+<button class="play-full-btn" id="playAvarohanamBtn" onclick="toggleJanyaAvarohanamAudio()">
+<i class="fas fa-play-circle"></i>
+<span id="playAvarohanamBtnText">Play</span>
+</button>
+<audio id="avarohanamAudio"></audio>
+</div>
+
+<div class="section-divider"></div>
+
+<div class="full-raga-section">
+<div class="modal-section-title">Keyboard Recording - Avarohanam</div>
+<div class="speed-control-container">
+<div class="speed-buttons" id="keyboardAvarohanamSpeedButtons">
+<button class="speed-btn" data-speed="0.5">0.5x</button>
+<button class="speed-btn" data-speed="0.75">0.75x</button>
+<button class="speed-btn active" data-speed="1">1x</button>
+<button class="speed-btn" data-speed="1.5">1.5x</button>
+<button class="speed-btn" data-speed="2">2x</button>
+</div>
+<div class="custom-speed-container">
+<span class="custom-speed-label">Custom:</span>
+<input type="number" class="custom-speed-input" id="keyboardAvarohanamCustomSpeed" placeholder="1.0" min="0.1" max="4" step="0.1">
+</div>
+</div>
+<button class="play-full-btn" id="playKeyboardAvarohanamBtn" onclick="toggleKeyboardAvarohanamAudio()">
+<i class="fas fa-play-circle"></i>
+<span id="playKeyboardAvarohanamBtnText">Play</span>
+</button>
+<audio id="keyboardAvarohanamAudio"></audio>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- 🌟 Chatbot Widget -->
+<div id="chatbot">
+  <div id="chatbot-header" onclick="toggleChatbot()">
+    <i class="fas fa-comments"></i>
+    <span>Ask about Rāgas</span>
+  </div>
+  <div id="chatbot-body">
+    <div id="chat-messages"></div>
+    <div id="chat-input-container">
+      <input type="text" id="chat-input" placeholder="Ask about a rāga..." />
+      <button id="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<footer>🎵 A Journey Through the 72 Melakartas 🎵</footer>
+
+<script>
+const chakrasData = [
+  { number: 1, name: "Indu", ragas: [{num: 1, name: "Kanakangi"}, {num: 2, name: "Ratnangi"}, {num: 3, name: "Ganamurti"}, {num: 4, name: "Vanaspati"}, {num: 5, name: "Manavati"}, {num: 6, name: "Tanarupi"}] },
+  { number: 2, name: "Netra", ragas: [{num: 7, name: "Senavati"}, {num: 8, name: "Hanumatodi"}, {num: 9, name: "Dhenuka"}, {num: 10, name: "Natakapriya"}, {num: 11, name: "Kokilapriya"}, {num: 12, name: "Rupavati"}] },
+  { number: 3, name: "Agni", ragas: [{num: 13, name: "Gayakapriya"}, {num: 14, name: "Vakulabharanam"}, {num: 15, name: "Mayamalavagowla"}, {num: 16, name: "Chakravakam"}, {num: 17, name: "Suryakantam"}, {num: 18, name: "Hatakambari"}] },
+  { number: 4, name: "Veda", ragas: [{num: 19, name: "Jhankaradhvani"}, {num: 20, name: "Natabhairavi"}, {num: 21, name: "Keeravani"}, {num: 22, name: "Kharaharapriya"}, {num: 23, name: "Gourimanohari"}, {num: 24, name: "Varunapriya"}] },
+  { number: 5, name: "Bana", ragas: [{num: 25, name: "Mararanjani"}, {num: 26, name: "Charukesi"}, {num: 27, name: "Sarasangi"}, {num: 28, name: "Harikambhoji"}, {num: 29, name: "Dheerasankarabharanam"}, {num: 30, name: "Naganandini"}] },
+  { number: 6, name: "Rutu", ragas: [{num: 31, name: "Yagapriya"}, {num: 32, name: "Ragavardhini"}, {num: 33, name: "Gangeyabhushani"}, {num: 34, name: "Vagadheeswari"}, {num: 35, name: "Shoolini"}, {num: 36, name: "Chalanata"}] },
+  { number: 7, name: "Rishi", ragas: [{num: 37, name: "Salagam"}, {num: 38, name: "Jalarnavam"}, {num: 39, name: "Jhalavarali"}, {num: 40, name: "Navaneetam"}, {num: 41, name: "Pavani"}, {num: 42, name: "Raghupriya"}] },
+  { number: 8, name: "Vasu", ragas: [{num: 43, name: "Gavambodhi"}, {num: 44, name: "Bhavapriya"}, {num: 45, name: "Shubhapantuvarali"}, {num: 46, name: "Shadvidamargini"}, {num: 47, name: "Suvarnangi"}, {num: 48, name: "Divyamani"}] },
+  { number: 9, name: "Brahma", ragas: [{num: 49, name: "Dhavalambari"}, {num: 50, name: "Namanarayani"}, {num: 51, name: "Kamavardhini"}, {num: 52, name: "Ramapriya"}, {num: 53, name: "Gamanashrama"}, {num: 54, name: "Vishwambari"}] },
+  { number: 10, name: "Disi", ragas: [{num: 55, name: "Shamalangi"}, {num: 56, name: "Shanmukhapriya"}, {num: 57, name: "Simhendramadhyamam"}, {num: 58, name: "Hemavati"}, {num: 59, name: "Dharmavati"}, {num: 60, name: "Neetimati"}] },
+  { number: 11, name: "Rudra", ragas: [{num: 61, name: "Kantamani"}, {num: 62, name: "Rishabhapriya"}, {num: 63, name: "Latangi"}, {num: 64, name: "Vachaspati"}, {num: 65, name: "Mechakalyani"}, {num: 66, name: "Chitrambari"}] },
+  { number: 12, name: "Aditya", ragas: [{num: 67, name: "Sucharitra"}, {num: 68, name: "Jyotiswarupini"}, {num: 69, name: "Dhatuvardhani"}, {num: 70, name: "Nasikabhushani"}, {num: 71, name: "Kosalam"}, {num: 72, name: "Rasikapriya"}] }
+];
+
+let currentSwaraAudio = null;
+let fullRagaAudio = null;
+let keyboardMelakartaAudio = null;
+let arohanamAudio = null;
+let avarohanamAudio = null;
+let keyboardArohanamAudio = null;
+let keyboardAvarohanamAudio = null;
+let currentMelakartaNumber = null;
+let currentMelakartaName = null;
+let currentJanyaRaga = null;
+let fullRagaSpeed = 1;
+let keyboardMelakartaSpeed = 1;
+let arohanamSpeed = 1;
+let avarohanamSpeed = 1;
+let keyboardArohanamSpeed = 1;
+let keyboardAvarohanamSpeed = 1;
+let viewingJanya = false;
+
+function initChakras() {
+  const container = document.getElementById('chakrasContainer');
+  
+  chakrasData.forEach(chakra => {
+    const chakraCard = document.createElement('div');
+    chakraCard.className = 'chakra-card';
+    chakraCard.id = `chakra-${chakra.number}`;
+    
+    chakraCard.innerHTML = `
+      <div class="chakra-header">
+        <div>
+          <span class="chakra-number">Chakra ${chakra.number}</span>
+          <span class="chakra-name">${chakra.name}</span>
+        </div>
+        <i class="fas fa-chevron-down chakra-icon"></i>
+      </div>
+      <div class="ragas-grid">
+        ${chakra.ragas.map(raga => `
+          <div class="raga-card" onclick="event.stopPropagation(); openModal(${raga.num}, '${raga.name}')">
+            <div class="raga-number">${raga.num}</div>
+            <i class="fas fa-music"></i>
+            <h4>${raga.name}</h4>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    
+    chakraCard.addEventListener('click', function(e) {
+      if (!e.target.closest('.raga-card')) {
+        toggleChakra(chakra.number);
+      }
+    });
+    
+    container.appendChild(chakraCard);
+  });
+}
+
+function initSpeedControls() {
+  const speedConfigs = [
+    { buttons: 'fullRagaSpeedButtons', input: 'fullRagaCustomSpeed', variable: 'fullRagaSpeed', audio: 'fullRagaAudio' },
+    { buttons: 'keyboardMelakartaSpeedButtons', input: 'keyboardMelakartaCustomSpeed', variable: 'keyboardMelakartaSpeed', audio: 'keyboardMelakartaAudio' },
+    { buttons: 'arohanamSpeedButtons', input: 'arohanamCustomSpeed', variable: 'arohanamSpeed', audio: 'arohanamAudio' },
+    { buttons: 'avarohanamSpeedButtons', input: 'avarohanamCustomSpeed', variable: 'avarohanamSpeed', audio: 'avarohanamAudio' },
+    { buttons: 'keyboardArohanamSpeedButtons', input: 'keyboardArohanamCustomSpeed', variable: 'keyboardArohanamSpeed', audio: 'keyboardArohanamAudio' },
+    { buttons: 'keyboardAvarohanamSpeedButtons', input: 'keyboardAvarohanamCustomSpeed', variable: 'keyboardAvarohanamSpeed', audio: 'keyboardAvarohanamAudio' }
+  ];
+
+  speedConfigs.forEach(config => {
+    const buttonsContainer = document.getElementById(config.buttons);
+    const customInput = document.getElementById(config.input);
+    
+    if (!buttonsContainer || !customInput) return;
+
+    buttonsContainer.querySelectorAll('.speed-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        buttonsContainer.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const speed = parseFloat(this.getAttribute('data-speed'));
+        
+        if (config.variable === 'fullRagaSpeed') fullRagaSpeed = speed;
+        else if (config.variable === 'keyboardMelakartaSpeed') keyboardMelakartaSpeed = speed;
+        else if (config.variable === 'arohanamSpeed') arohanamSpeed = speed;
+        else if (config.variable === 'avarohanamSpeed') avarohanamSpeed = speed;
+        else if (config.variable === 'keyboardArohanamSpeed') keyboardArohanamSpeed = speed;
+        else if (config.variable === 'keyboardAvarohanamSpeed') keyboardAvarohanamSpeed = speed;
+        
+        customInput.value = '';
+        
+        const audioElement = document.getElementById(config.audio);
+        if (audioElement) {
+          audioElement.playbackRate = speed;
+        }
+      });
+    });
+    
+    customInput.addEventListener('input', function() {
+      const customValue = parseFloat(this.value);
+      if (customValue && customValue >= 0.1 && customValue <= 4) {
+        buttonsContainer.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        
+        if (config.variable === 'fullRagaSpeed') fullRagaSpeed = customValue;
+        else if (config.variable === 'keyboardMelakartaSpeed') keyboardMelakartaSpeed = customValue;
+        else if (config.variable === 'arohanamSpeed') arohanamSpeed = customValue;
+        else if (config.variable === 'avarohanamSpeed') avarohanamSpeed = customValue;
+        else if (config.variable === 'keyboardArohanamSpeed') keyboardArohanamSpeed = customValue;
+        else if (config.variable === 'keyboardAvarohanamSpeed') keyboardAvarohanamSpeed = customValue;
+        
+        const audioElement = document.getElementById(config.audio);
+        if (audioElement) {
+          audioElement.playbackRate = customValue;
+        }
+      }
+    });
+  });
+}
+
+function getActiveSpeed(type) {
+  const speedMap = {
+    'fullRaga': { speed: fullRagaSpeed, input: 'fullRagaCustomSpeed' },
+    'keyboardMelakarta': { speed: keyboardMelakartaSpeed, input: 'keyboardMelakartaCustomSpeed' },
+    'arohanam': { speed: arohanamSpeed, input: 'arohanamCustomSpeed' },
+    'avarohanam': { speed: avarohanamSpeed, input: 'avarohanamCustomSpeed' },
+    'keyboardArohanam': { speed: keyboardArohanamSpeed, input: 'keyboardArohanamCustomSpeed' },
+    'keyboardAvarohanam': { speed: keyboardAvarohanamSpeed, input: 'keyboardAvarohanamCustomSpeed' }
+  };
+  
+  const config = speedMap[type];
+  if (!config) return 1;
+  
+  const customValue = parseFloat(document.getElementById(config.input).value);
+  if (customValue && customValue >= 0.1 && customValue <= 4) {
+    return customValue;
+  }
+  return config.speed;
+}
+
+function toggleChakra(chakraNumber) {
+  const chakraCard = document.getElementById(`chakra-${chakraNumber}`);
+  chakraCard.classList.toggle('expanded');
+}
+
+function stopAllAudio() {
+  const audioElements = [
+    { audio: currentSwaraAudio, isSwara: true },
+    { audio: fullRagaAudio, btn: 'playFullBtn', text: 'playBtnText' },
+    { audio: keyboardMelakartaAudio, btn: 'playKeyboardMelakartaBtn', text: 'playKeyboardMelakartaBtnText' },
+    { audio: arohanamAudio, btn: 'playArohanamBtn', text: 'playArohanamBtnText' },
+    { audio: avarohanamAudio, btn: 'playAvarohanamBtn', text: 'playAvarohanamBtnText' },
+    { audio: keyboardArohanamAudio, btn: 'playKeyboardArohanamBtn', text: 'playKeyboardArohanamBtnText' },
+    { audio: keyboardAvarohanamAudio, btn: 'playKeyboardAvarohanamBtn', text: 'playKeyboardAvarohanamBtnText' }
+  ];
+
+  audioElements.forEach(item => {
+    if (item.audio && !item.audio.paused) {
+      item.audio.pause();
+      item.audio.currentTime = 0;
+      
+      if (item.isSwara) {
+        const swaraCard = item.audio.parentElement;
+        swaraCard.classList.remove('playing');
+        const swaraIcon = swaraCard.querySelector('i');
+        swaraIcon.className = 'fas fa-play-circle';
+      } else if (item.btn) {
+        const playBtn = document.getElementById(item.btn);
+        const playBtnIcon = playBtn.querySelector('i');
+        const playBtnText = document.getElementById(item.text);
+        
+        playBtn.classList.remove('playing');
+        playBtnIcon.className = 'fas fa-play-circle';
+        playBtnText.textContent = 'Play';
+      }
+    }
+  });
+}
+
+async function openModal(melakartaNumber, melakartaName){
+  currentMelakartaNumber = melakartaNumber;
+  currentMelakartaName = melakartaName;
+  viewingJanya = false;
+  currentJanyaRaga = null;
+  
+  stopAllAudio();
+  
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('janyaContent').style.display = 'none';
+  document.getElementById('janyaDetailContent').style.display = 'none';
+  document.getElementById('janyaBtnSection').style.display = 'block';
+  
+  try {
+    const response = await fetch(`/api/melakarta/${melakartaNumber}`);
+    const data = await response.json();
+    
+    if(data.error) {
+      alert('Error loading melakarta details');
+      return;
+    }
+    
+    document.getElementById('modalTitle').innerText = data.raaga_name;
+    const grid = document.getElementById('swarasGrid');
+    grid.innerHTML = '';
+    
+    const arohanamStr = data.arohanam.replace('Sa higher', 'Sa_higher');
+    const swaras = arohanamStr.split(' ').map(s => s.replace('Sa_higher', 'Sa higher'));
+    swaras.forEach(swara => {
+      const card = document.createElement('div');
+      card.className = 'swara-card';
+      card.innerHTML = `
+        <i class="fas fa-play-circle"></i>
+        <span>${swara}</span>
+        <audio src="/audio/${encodeURIComponent(swara)}"></audio>
+      `;
+      card.onclick = function() { toggleSwara(this); };
+      grid.appendChild(card);
+    });
+    
+    fullRagaAudio = document.getElementById('fullRagaAudio');
+    const playBtn = document.getElementById('playFullBtn');
+    const playBtnText = document.getElementById('playBtnText');
+    const playBtnIcon = playBtn.querySelector('i');
+    
+    if(data.audio_path) {
+      const filename = data.audio_path.split('/').pop();
+      fullRagaAudio.src = `/audio/${filename}`;
+      playBtn.disabled = false;
+    } else {
+      playBtn.disabled = true;
+      playBtnText.textContent = 'Audio Not Available';
+    }
+    
+    fullRagaAudio.pause();
+    fullRagaAudio.currentTime = 0;
+    fullRagaAudio.playbackRate = getActiveSpeed('fullRaga');
+    playBtn.classList.remove('playing');
+    playBtnIcon.className = 'fas fa-play-circle';
+    playBtnText.textContent = 'Play';
+    
+    fullRagaAudio.onended = function() {
+      playBtn.classList.remove('playing');
+      playBtnIcon.className = 'fas fa-play-circle';
+      playBtnText.textContent = 'Play';
+    };
+    
+    keyboardMelakartaAudio = document.getElementById('keyboardMelakartaAudio');
+    const playKeyboardMelakartaBtn = document.getElementById('playKeyboardMelakartaBtn');
+    const playKeyboardMelakartaBtnText = document.getElementById('playKeyboardMelakartaBtnText');
+    const playKeyboardMelakartaBtnIcon = playKeyboardMelakartaBtn.querySelector('i');
+    
+    if(data.keyboard_melakarta_audio_exists && data.keyboard_melakarta_audio_path) {
+      keyboardMelakartaAudio.src = data.keyboard_melakarta_audio_path;
+      playKeyboardMelakartaBtn.disabled = false;
+    } else {
+      playKeyboardMelakartaBtn.disabled = true;
+      playKeyboardMelakartaBtnText.textContent = 'Audio Not Available';
+    }
+    
+    keyboardMelakartaAudio.pause();
+    keyboardMelakartaAudio.currentTime = 0;
+    keyboardMelakartaAudio.playbackRate = getActiveSpeed('keyboardMelakarta');
+    playKeyboardMelakartaBtn.classList.remove('playing');
+    playKeyboardMelakartaBtnIcon.className = 'fas fa-play-circle';
+    playKeyboardMelakartaBtnText.textContent = 'Play';
+    
+    keyboardMelakartaAudio.onended = function() {
+      playKeyboardMelakartaBtn.classList.remove('playing');
+      playKeyboardMelakartaBtnIcon.className = 'fas fa-play-circle';
+      playKeyboardMelakartaBtnText.textContent = 'Play';
+    };
+    
+    document.getElementById('swarasModal').style.display = 'block';
+    
+  } catch(error) {
+    console.error('Error loading melakarta:', error);
+    alert('Error loading melakarta details');
+  }
+}
+
+async function showJanyaRagas() {
+  if (!currentMelakartaName) {
+    alert('No melakarta selected');
+    return;
+  }
+  
+  viewingJanya = true;
+  
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('janyaContent').style.display = 'block';
+  document.getElementById('janyaDetailContent').style.display = 'none';
+  document.getElementById('backBtn').style.display = 'block';
+  
+  document.getElementById('janyaLoading').style.display = 'block';
+  document.getElementById('noJanyaData').style.display = 'none';
+  document.getElementById('janyaList').innerHTML = '';
+  
+  stopAllAudio();
+  
+  try {
+    const response = await fetch(`/api/janya-ragas/${encodeURIComponent(currentMelakartaName)}`);
+    const data = await response.json();
+    
+    document.getElementById('janyaLoading').style.display = 'none';
+    
+    if (data.error) {
+      document.getElementById('noJanyaData').style.display = 'block';
+      return;
+    }
+    
+    if (data.janya_ragas && data.janya_ragas.length > 0) {
+      const janyaList = document.getElementById('janyaList');
+      data.janya_ragas.forEach(janya => {
+        const janyaItem = document.createElement('div');
+        janyaItem.className = 'janya-item';
+        janyaItem.innerHTML = `
+          <i class="fas fa-music"></i>
+          <h4>${janya.janya_raga_name}</h4>
+        `;
+        janyaItem.onclick = function() {
+          openJanyaModal(janya);
+        };
+        janyaList.appendChild(janyaItem);
+      });
+    } else {
+      document.getElementById('noJanyaData').style.display = 'block';
+    }
+    
+  } catch (error) {
+    console.error('Error loading janya ragas:', error);
+    document.getElementById('janyaLoading').style.display = 'none';
+    document.getElementById('noJanyaData').style.display = 'block';
+  }
+}
+
+async function openJanyaModal(janyaData) {
+  currentJanyaRaga = janyaData;
+  
+  stopAllAudio();
+  
+  document.getElementById('janyaContent').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('janyaDetailContent').style.display = 'block';
+  document.getElementById('backBtn').style.display = 'block';
+  
+  document.getElementById('modalTitle').innerText = janyaData.janya_raga_name;
+  
+  const arohanamGrid = document.getElementById('arohanamSwarasGrid');
+  arohanamGrid.innerHTML = '';
+  const arohanamStr = janyaData.arohanam.replace('Sa higher', 'Sa_higher');
+  const arohanamSwaras = arohanamStr.split(' ').map(s => s.replace('Sa_higher', 'Sa higher'));
+  arohanamSwaras.forEach(swara => {
+    const card = document.createElement('div');
+    card.className = 'swara-card';
+    card.innerHTML = `
+      <i class="fas fa-play-circle"></i>
+      <span>${swara}</span>
+      <audio src="/audio/${encodeURIComponent(swara)}"></audio>
+    `;
+    card.onclick = function() { toggleSwara(this); };
+    arohanamGrid.appendChild(card);
+  });
+  
+  const avarohanamGrid = document.getElementById('avarohanamSwarasGrid');
+  avarohanamGrid.innerHTML = '';
+  const avarohanamStr = janyaData.avarohanam.replace('Sa higher', 'Sa_higher');
+  const avarohanamSwaras = avarohanamStr.split(' ').map(s => s.replace('Sa_higher', 'Sa higher'));
+  avarohanamSwaras.forEach(swara => {
+    const card = document.createElement('div');
+    card.className = 'swara-card';
+    card.innerHTML = `
+      <i class="fas fa-play-circle"></i>
+      <span>${swara}</span>
+      <audio src="/audio/${encodeURIComponent(swara)}"></audio>
+    `;
+    card.onclick = function() { toggleSwara(this); };
+    avarohanamGrid.appendChild(card);
+  });
+  
+  arohanamAudio = document.getElementById('arohanamAudio');
+  const playArohanamBtn = document.getElementById('playArohanamBtn');
+  const playArohanamBtnText = document.getElementById('playArohanamBtnText');
+  const playArohanamBtnIcon = playArohanamBtn.querySelector('i');
+  
+  if (janyaData.audio_path_arohanam) {
+    arohanamAudio.src = janyaData.audio_path_arohanam;
+    playArohanamBtn.disabled = false;
+    playArohanamBtnText.textContent = 'Play';
+  } else {
+    playArohanamBtn.disabled = true;
+    playArohanamBtnText.textContent = 'Audio Not Available';
+  }
+  
+  arohanamAudio.pause();
+  arohanamAudio.currentTime = 0;
+  arohanamAudio.playbackRate = getActiveSpeed('arohanam');
+  playArohanamBtn.classList.remove('playing');
+  playArohanamBtnIcon.className = 'fas fa-play-circle';
+  
+  arohanamAudio.onended = function() {
+    playArohanamBtn.classList.remove('playing');
+    playArohanamBtnIcon.className = 'fas fa-play-circle';
+    playArohanamBtnText.textContent = 'Play';
+  };
+  
+  keyboardArohanamAudio = document.getElementById('keyboardArohanamAudio');
+  const playKeyboardArohanamBtn = document.getElementById('playKeyboardArohanamBtn');
+  const playKeyboardArohanamBtnText = document.getElementById('playKeyboardArohanamBtnText');
+  const playKeyboardArohanamBtnIcon = playKeyboardArohanamBtn.querySelector('i');
+  
+  if (janyaData.keyboard_audio_path_arohanam) {
+    keyboardArohanamAudio.src = janyaData.keyboard_audio_path_arohanam;
+    playKeyboardArohanamBtn.disabled = false;
+    playKeyboardArohanamBtnText.textContent = 'Play';
+  } else {
+    playKeyboardArohanamBtn.disabled = true;
+    playKeyboardArohanamBtnText.textContent = 'Audio Not Available';
+  }
+  
+  keyboardArohanamAudio.pause();
+  keyboardArohanamAudio.currentTime = 0;
+  keyboardArohanamAudio.playbackRate = getActiveSpeed('keyboardArohanam');
+  playKeyboardArohanamBtn.classList.remove('playing');
+  playKeyboardArohanamBtnIcon.className = 'fas fa-play-circle';
+  
+  keyboardArohanamAudio.onended = function() {
+    playKeyboardArohanamBtn.classList.remove('playing');
+    playKeyboardArohanamBtnIcon.className = 'fas fa-play-circle';
+    playKeyboardArohanamBtnText.textContent = 'Play';
+  };
+  
+  avarohanamAudio = document.getElementById('avarohanamAudio');
+  const playAvarohanamBtn = document.getElementById('playAvarohanamBtn');
+  const playAvarohanamBtnText = document.getElementById('playAvarohanamBtnText');
+  const playAvarohanamBtnIcon = playAvarohanamBtn.querySelector('i');
+  
+  if (janyaData.audio_path_avarohanam) {
+    avarohanamAudio.src = janyaData.audio_path_avarohanam;
+    playAvarohanamBtn.disabled = false;
+    playAvarohanamBtnText.textContent = 'Play';
+  } else {
+    playAvarohanamBtn.disabled = true;
+    playAvarohanamBtnText.textContent = 'Audio Not Available';
+  }
+  
+  avarohanamAudio.pause();
+  avarohanamAudio.currentTime = 0;
+  avarohanamAudio.playbackRate = getActiveSpeed('avarohanam');
+  playAvarohanamBtn.classList.remove('playing');
+  playAvarohanamBtnIcon.className = 'fas fa-play-circle';
+  
+  avarohanamAudio.onended = function() {
+    playAvarohanamBtn.classList.remove('playing');
+    playAvarohanamBtnIcon.className = 'fas fa-play-circle';
+    playAvarohanamBtnText.textContent = 'Play';
+  };
+  
+  keyboardAvarohanamAudio = document.getElementById('keyboardAvarohanamAudio');
+  const playKeyboardAvarohanamBtn = document.getElementById('playKeyboardAvarohanamBtn');
+  const playKeyboardAvarohanamBtnText = document.getElementById('playKeyboardAvarohanamBtnText');
+  const playKeyboardAvarohanamBtnIcon = playKeyboardAvarohanamBtn.querySelector('i');
+  
+  if (janyaData.keyboard_audio_path_avarohanam) {
+    keyboardAvarohanamAudio.src = janyaData.keyboard_audio_path_avarohanam;
+    playKeyboardAvarohanamBtn.disabled = false;
+    playKeyboardAvarohanamBtnText.textContent = 'Play';
+  } else {
+    playKeyboardAvarohanamBtn.disabled = true;
+    playKeyboardAvarohanamBtnText.textContent = 'Audio Not Available';
+  }
+  
+  keyboardAvarohanamAudio.pause();
+  keyboardAvarohanamAudio.currentTime = 0;
+  keyboardAvarohanamAudio.playbackRate = getActiveSpeed('keyboardAvarohanam');
+  playKeyboardAvarohanamBtn.classList.remove('playing');
+  playKeyboardAvarohanamBtnIcon.className = 'fas fa-play-circle';
+  
+  keyboardAvarohanamAudio.onended = function() {
+    playKeyboardAvarohanamBtn.classList.remove('playing');
+    playKeyboardAvarohanamBtnIcon.className = 'fas fa-play-circle';
+    playKeyboardAvarohanamBtnText.textContent = 'Play';
+  };
+}
+
+function goBackToMelakarta() {
+  if (currentJanyaRaga) {
+    showJanyaRagas();
+    currentJanyaRaga = null;
+  } else {
+    openModal(currentMelakartaNumber, currentMelakartaName);
+  }
+}
+
+function toggleSwara(card) {
+  const audio = card.querySelector('audio');
+  const icon = card.querySelector('i');
+  
+  if(currentSwaraAudio === audio && !audio.paused) {
+    audio.pause();
+    audio.currentTime = 0;
+    card.classList.remove('playing');
+    icon.className = 'fas fa-play-circle';
+    currentSwaraAudio = null;
+    return;
+  }
+  
+  stopAllAudio();
+  
+  audio.play();
+  card.classList.add('playing');
+  icon.className = 'fas fa-pause-circle';
+  currentSwaraAudio = audio;
+  
+  audio.onended = function() {
+    card.classList.remove('playing');
+    icon.className = 'fas fa-play-circle';
+    currentSwaraAudio = null;
+  };
+}
+
+function toggleAudioPlayback(audioElement, btnId, textId) {
+  const playBtn = document.getElementById(btnId);
+  const playBtnText = document.getElementById(textId);
+  const playBtnIcon = playBtn.querySelector('i');
+  
+  if(!audioElement.paused) {
+    audioElement.pause();
+    audioElement.currentTime = 0;
+    playBtn.classList.remove('playing');
+    playBtnIcon.className = 'fas fa-play-circle';
+    playBtnText.textContent = 'Play';
+    return;
+  }
+  
+  stopAllAudio();
+  
+  const speedType = btnId.includes('Arohanam') ? 
+                    (btnId.includes('Keyboard') ? 'keyboardArohanam' : 'arohanam') : 
+                    btnId.includes('Avarohanam') ? 
+                    (btnId.includes('Keyboard') ? 'keyboardAvarohanam' : 'avarohanam') :
+                    btnId.includes('KeyboardMelakarta') ? 'keyboardMelakarta' : 'fullRaga';
+  
+  audioElement.playbackRate = getActiveSpeed(speedType);
+  audioElement.play();
+  playBtn.classList.add('playing');
+  playBtnIcon.className = 'fas fa-pause-circle';
+  playBtnText.textContent = 'Pause';
+}
+
+function toggleFullRaga() {
+  toggleAudioPlayback(fullRagaAudio, 'playFullBtn', 'playBtnText');
+}
+
+function toggleKeyboardMelakartaAudio() {
+  toggleAudioPlayback(keyboardMelakartaAudio, 'playKeyboardMelakartaBtn', 'playKeyboardMelakartaBtnText');
+}
+
+function toggleJanyaArohanamAudio() {
+  toggleAudioPlayback(arohanamAudio, 'playArohanamBtn', 'playArohanamBtnText');
+}
+
+function toggleJanyaAvarohanamAudio() {
+  toggleAudioPlayback(avarohanamAudio, 'playAvarohanamBtn', 'playAvarohanamBtnText');
+}
+
+function toggleKeyboardArohanamAudio() {
+  toggleAudioPlayback(keyboardArohanamAudio, 'playKeyboardArohanamBtn', 'playKeyboardArohanamBtnText');
+}
+
+function toggleKeyboardAvarohanamAudio() {
+  toggleAudioPlayback(keyboardAvarohanamAudio, 'playKeyboardAvarohanamBtn', 'playKeyboardAvarohanamBtnText');
+}
+
+function closeModal(){
+  stopAllAudio();
+  
+  document.getElementById('swarasModal').style.display='none';
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('janyaContent').style.display = 'none';
+  document.getElementById('janyaDetailContent').style.display = 'none';
+  document.getElementById('backBtn').style.display = 'none';
+  
+  currentSwaraAudio = null;
+  viewingJanya = false;
+  currentJanyaRaga = null;
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById('swarasModal');
+  if (event.target == modal) {
+    closeModal();
+  }
+}
+
+initChakras();
+initSpeedControls();
+
+let chatHistory = [];
+
+function toggleChatbot() {
+  const body = document.getElementById("chatbot-body");
+  body.style.display = body.style.display === "flex" ? "none" : "flex";
+}
+
+async function sendMessage() {
+  const input = document.getElementById("chat-input");
+  const message = input.value.trim();
+  if (!message) return;
+
+  appendMessage(message, "user");
+  input.value = "";
+
+  chatHistory.push({ role: "user", parts: [{ text: message }] });
+
+  try {
+    const response = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ history: chatHistory })
+    });
+
+    const data = await response.json();
+    appendMessage(data.reply, "bot");
+
+    chatHistory.push({ role: "model", parts: [{ text: data.reply }] });
+  } catch (err) {
+    appendMessage("⚠️ Error: Unable to reach the server.", "bot");
+    console.error(err);
+  }
+}
+
+function appendMessage(text, sender) {
+  const container = document.getElementById("chat-messages");
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add("chat-message", sender === "user" ? "user-message" : "bot-message");
+  msgDiv.textContent = text;
+  container.appendChild(msgDiv);
+  container.scrollTop = container.scrollHeight;
+}
+
+document.getElementById("chat-input").addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessage();
+});
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RāgaSamhita</title>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  color: #2c2c2c;
+  background: linear-gradient(135deg, #faf8f3, #f0ebe1);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+header { 
+  text-align: center; 
+  padding: 1rem 1rem; 
+  background: linear-gradient(135deg, rgba(255,250,240,0.95), rgba(255,245,230,0.95));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 15px rgba(139,115,85,0.15);
+  border-bottom: 1px solid rgba(139,115,85,0.1);
+  position: relative;  /* ADD THIS LINE */
+}
+
+header h1 { 
+  font-family: 'Marcellus', serif; 
+  font-size: 2rem; 
+  margin: 0; 
+  color: #8b6f47;
+  text-shadow: 0 1px 3px rgba(139,111,71,0.2);
+  letter-spacing: 2px;
+}
+
+header p { 
+  margin-top: 0.3rem; 
+  font-size: 0.9rem; 
+  color: #a0826d;
+  letter-spacing: 1px;
+}
+.home-btn {
+  position: absolute;
+  top: 1rem;
+  left: 2rem;
+  background: linear-gradient(135deg, #c9a77c, #b8956f);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  border-radius: 25px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 10px rgba(139,115,85,0.2);
+  text-decoration: none;
+  z-index: 100;
+}
+
+.home-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(139,115,85,0.3);
+  background: linear-gradient(135deg, #d4b58d, #c3a580);
+}
+
+.home-btn i {
+  font-size: 1rem;
+}
+.main-container {
+  flex: 1;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chakras-grid { 
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem; 
+  width: 100%;
+  max-width: 1200px;
+}
+
+.chakra-card {
+  background: linear-gradient(145deg, rgba(255,253,250,0.98), rgba(255,250,245,0.98));
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 3px 15px rgba(139,115,85,0.12);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid rgba(139,115,85,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.chakra-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at top right, rgba(218,165,105,0.08), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.chakra-card:hover::before {
+  opacity: 1;
+}
+
+.chakra-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(139,115,85,0.2);
+  border-color: rgba(139,115,85,0.3);
+}
+
+.chakra-card.expanded {
+  background: linear-gradient(145deg, rgba(255,250,240,0.98), rgba(250,245,235,0.98));
+  border-color: rgba(139,115,85,0.3);
+  box-shadow: 0 6px 30px rgba(139,115,85,0.18);
+}
+
+.chakra-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.chakra-number {
+  font-family: 'Marcellus', serif;
+  font-size: 1.3rem;
+  color: #8b6f47;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(139,111,71,0.15);
+}
+
+.chakra-icon {
+  font-size: 1.1rem;
+  color: #a0826d;
+  transition: transform 0.4s ease;
+}
+
+.chakra-card.expanded .chakra-icon {
+  transform: rotate(180deg);
+}
+
+.chakra-name {
+  font-family: 'Marcellus', serif;
+  font-size: 1.1rem;
+  color: #5d4e37;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(93,78,55,0.1);
+  display: inline;
+  margin-left: 1rem;
+}
+
+.ragas-grid {
+  display: none;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(139,115,85,0.2);
+  animation: slideDown 0.4s ease;
+}
+
+.chakra-card.expanded .ragas-grid {
+  display: grid;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.raga-card {
+  background: linear-gradient(135deg, rgba(255,250,240,0.95), rgba(250,245,235,0.95));
+  border-radius: 10px;
+  padding: 0.8rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(139,115,85,0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid rgba(139,115,85,0.15);
+}
+
+.raga-card:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 5px 20px rgba(139,115,85,0.2);
+  border-color: rgba(139,115,85,0.3);
+  background: linear-gradient(135deg, rgba(255,248,235,0.98), rgba(245,240,230,0.98));
+}
+
+.raga-card i {
+  font-size: 1.3rem;
+  color: #a0826d;
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.raga-card h4 {
+  font-family: 'Marcellus', serif;
+  font-size: 0.9rem;
+  margin: 0.3rem 0;
+  color: #5d4e37;
+}
+
+.raga-number {
+  font-size: 0.75rem;
+  color: #8b7355;
+  margin-bottom: 0.2rem;
+}
+
+footer { 
+  text-align: center; 
+  padding: 0.6rem; 
+  background: linear-gradient(135deg, rgba(255,250,240,0.95), rgba(255,245,230,0.95));
+  font-size: 0.8rem; 
+  color: #a0826d;
+  box-shadow: 0 -2px 15px rgba(139,115,85,0.15);
+  letter-spacing: 1px;
+  border-top: 1px solid rgba(139,115,85,0.1);
+}
+
+.modal { 
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  left: 0; 
+  top: 0; 
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.6);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content { 
+  background: linear-gradient(145deg, #fffaf5, #fdf8f3);
+  margin: 3% auto; 
+  padding: 2.5rem; 
+  border-radius: 20px; 
+  width: 85%; 
+  max-width: 900px; 
+  text-align: center; 
+  color: #2c2c2c; 
+  position: relative; 
+  max-height: 90vh; 
+  overflow-y: auto;
+  border: 1px solid rgba(139,115,85,0.2);
+  box-shadow: 0 10px 40px rgba(139,115,85,0.25);
+}
+
+.modal h3 { 
+  margin-bottom: 1.5rem; 
+  font-size: 2.2rem; 
+  color: #8b6f47;
+  font-family: 'Marcellus', serif;
+  text-shadow: 0 2px 4px rgba(139,111,71,0.15);
+}
+
+.close { 
+  position: absolute; 
+  top: 20px; 
+  right: 30px; 
+  font-size: 2.5rem; 
+  cursor: pointer; 
+  color: #a0826d; 
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.close:hover { 
+  color: #c0504d;
+  transform: rotate(90deg);
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #a0826d;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  color: #8b6f47;
+  transform: translateX(-5px);
+}
+
+.section-divider { 
+  margin: 2rem 0; 
+  border-top: 1px solid rgba(139,115,85,0.2);
+}
+
+.modal-section-title { 
+  font-size: 1.6rem; 
+  color: #8b6f47; 
+  margin: 1.5rem 0 1rem; 
+  font-family: 'Marcellus', serif;
+}
+
+.swaras-grid { 
+  display: flex; 
+  gap: 1rem; 
+  justify-content: center; 
+  flex-wrap: wrap; 
+  padding: 1rem 0;
+}
+
+.swara-card { 
+  background: linear-gradient(135deg, rgba(255,250,240,0.95), rgba(250,245,235,0.95));
+  border-radius: 10px; 
+  padding: 0.8rem 1rem; 
+  cursor: pointer; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  min-width: 65px; 
+  transition: all 0.3s ease;
+  border: 1px solid rgba(139,115,85,0.15);
+}
+
+.swara-card:hover { 
+  background: linear-gradient(135deg, rgba(255,248,235,0.98), rgba(245,240,230,0.98));
+  transform: scale(1.1);
+  border-color: rgba(139,115,85,0.3);
+}
+
+.swara-card i { 
+  font-size: 1.4rem; 
+  margin-bottom: 0.3rem; 
+  color: #a0826d;
+}
+
+.swara-card.playing i { 
+  color: #6ba368;
+}
+
+.swara-card span { 
+  font-size: 0.9rem;
+  color: #5d4e37;
+}
+
+.full-raga-section { 
+  margin-top: 2rem; 
+  padding: 1.5rem; 
+  background: rgba(139,115,85,0.08); 
+  border-radius: 15px;
+  border: 1px solid rgba(139,115,85,0.15);
+}
+
+.speed-control-container {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.speed-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.speed-btn {
+  background: linear-gradient(135deg, rgba(255,250,240,0.95), rgba(250,245,235,0.95));
+  color: #5d4e37;
+  border: 1px solid rgba(139,115,85,0.25);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.speed-btn:hover {
+  background: linear-gradient(135deg, rgba(255,248,235,0.98), rgba(245,240,230,0.98));
+  border-color: rgba(139,115,85,0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(139,115,85,0.2);
+}
+
+.speed-btn.active {
+  background: linear-gradient(135deg, #c9a77c, #b8956f);
+  color: #fff;
+  border-color: #b8956f;
+  box-shadow: 0 3px 12px rgba(139,115,85,0.3);
+}
+
+.custom-speed-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-speed-label {
+  font-size: 0.9rem;
+  color: #5d4e37;
+  font-weight: 500;
+}
+
+.custom-speed-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid rgba(139,115,85,0.25);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  background: rgba(255,250,240,0.95);
+  color: #5d4e37;
+  transition: all 0.3s ease;
+}
+
+.custom-speed-input:focus {
+  outline: none;
+  border-color: rgba(139,115,85,0.5);
+  box-shadow: 0 0 0 3px rgba(139,115,85,0.1);
+}
+
+.custom-speed-input::placeholder {
+  color: #a0826d;
+}
+
+.play-full-btn { 
+  background: linear-gradient(135deg, #c9a77c, #b8956f); 
+  color: #fff; 
+  border: none; 
+  padding: 1rem 2.5rem; 
+  font-size: 1.1rem; 
+  border-radius: 50px; 
+  cursor: pointer; 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 0.7rem; 
+  transition: all 0.3s ease; 
+  font-weight: 600; 
+  margin-top: 1rem;
+  box-shadow: 0 3px 12px rgba(139,115,85,0.25);
+}
+
+.play-full-btn:hover { 
+  transform: translateY(-3px); 
+  box-shadow: 0 6px 20px rgba(139,115,85,0.35);
+  background: linear-gradient(135deg, #d4b58d, #c3a580);
+}
+
+.play-full-btn i { 
+  font-size: 1.4rem;
+}
+
+.play-full-btn:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed;
+  transform: none;
+}
+
+.play-full-btn.playing { 
+  background: linear-gradient(135deg, #6ba368, #5a8f57);
+}
+
+.janya-btn {
+  background: linear-gradient(135deg, #8b6f47, #7a5f3a);
+}
+
+.janya-btn:hover {
+  background: linear-gradient(135deg, #9a7e56, #896e49);
+}
+
+.janya-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.janya-item {
+  background: linear-gradient(135deg, rgba(255,250,240,0.95), rgba(250,245,235,0.95));
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(139,115,85,0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid rgba(139,115,85,0.15);
+}
+
+.janya-item:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 5px 20px rgba(139,115,85,0.2);
+  border-color: rgba(139,115,85,0.3);
+  background: linear-gradient(135deg, rgba(255,248,235,0.98), rgba(245,240,230,0.98));
+}
+
+.janya-item i {
+  font-size: 1.3rem;
+  color: #a0826d;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.janya-item h4 {
+  font-family: 'Marcellus', serif;
+  font-size: 1rem;
+  margin: 0;
+  color: #5d4e37;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #8b6f47;
+  font-size: 1.2rem;
+}
+
+.no-data {
+  text-align: center;
+  padding: 2rem;
+  color: #a0826d;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 1400px) {
+  .ragas-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .ragas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .janya-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .speed-buttons {
+    width: 100%;
+  }
+  
+  .speed-btn {
+    flex: 1;
+    min-width: 60px;
+  }
+  
+  .custom-speed-container {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+#chatbot {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 340px;
+  max-height: 500px;
+  font-family: 'Roboto', sans-serif;
+  z-index: 1500;
+}
+
+#chatbot-header {
+  background: linear-gradient(135deg, #8b6f47, #7a5f3a);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+#chatbot-header i {
+  font-size: 1.2rem;
+}
+
+#chatbot-header span {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+#chatbot-body {
+  display: none;
+  flex-direction: column;
+  background: #fffaf5;
+  border: 1px solid rgba(139,115,85,0.25);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  max-height: 450px;
+  overflow: hidden;
+}
+
+#chat-messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  height: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-message {
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 80%;
+  word-wrap: break-word;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.user-message {
+  background: #c9a77c;
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
+}
+
+.bot-message {
+  background: rgba(139,115,85,0.1);
+  color: #3a2e1e;
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+}
+
+#chat-input-container {
+  display: flex;
+  border-top: 1px solid rgba(139,115,85,0.25);
+  padding: 8px;
+  background: #fdf8f3;
+}
+
+#chat-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 8px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.9);
+}
+
+#send-btn {
+  background: linear-gradient(135deg, #8b6f47, #7a5f3a);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-left: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#send-btn:hover {
+  background: linear-gradient(135deg, #9a7e56, #896e49);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139,115,85,0.3);
+  border-radius: 6px;
+}
+</style>
+</head>
+<body>
+<header>
+  <a href="/" class="home-btn">
+  <i class="fas fa-home"></i>
+  <span>Back to home</span>
+</a>
+  <h1>RāgaSamhita</h1>
+  <p>The Collection of Ragas</p>
 </header>
 
 <div class="main-container">
