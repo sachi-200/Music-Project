@@ -93,37 +93,6 @@ h1 {
   border: 1px solid rgba(231, 111, 81, 0.1);
 }
 
-.scale-selector {
-  margin-bottom: 30px;
-}
-
-.scale-selector label {
-  display: block;
-  font-weight: 600;
-  font-size: 1.1em;
-  color: #444;
-  margin-bottom: 12px;
-}
-
-.scale-selector select {
-  width: 100%;
-  padding: 14px 18px;
-  font-size: 1em;
-  border: 2px solid #f4a261;
-  border-radius: 10px;
-  background: white;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.scale-selector select:focus {
-  outline: none;
-  border-color: #e76f51;
-  box-shadow: 0 0 0 3px rgba(231, 111, 81, 0.1);
-}
-
 .tabs {
   display: flex;
   gap: 15px;
@@ -210,6 +179,13 @@ h1 {
   padding: 30px;
 }
 
+.record-instruction {
+  font-size: 1.1em;
+  color: #666;
+  margin-bottom: 25px;
+  font-weight: 500;
+}
+
 .record-btn {
   width: 120px;
   height: 120px;
@@ -281,64 +257,23 @@ h1 {
   transform: translateY(-2px);
 }
 
-.continue-btn {
-  background: #06d6a0;
-  color: white;
-  box-shadow: 0 3px 10px rgba(6, 214, 160, 0.3);
-}
-
-.continue-btn:hover {
-  background: #05b885;
-  transform: translateY(-2px);
-}
-
 .timer {
   font-size: 2em;
   font-weight: 600;
   color: #e76f51;
   margin: 20px 0;
   font-family: 'Orbitron', sans-serif;
-}
-
-.recording-status {
   display: none;
-  background: rgba(230, 57, 70, 0.1);
-  padding: 15px;
-  border-radius: 10px;
-  margin: 20px 0;
-  border-left: 4px solid #e63946;
 }
 
-.recording-status.show {
+.timer.show {
   display: block;
-}
-
-.recording-status-text {
-  color: #e63946;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.recording-dot {
-  width: 12px;
-  height: 12px;
-  background: #e63946;
-  border-radius: 50%;
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
 }
 
 .file-info {
   background: rgba(244, 162, 97, 0.1);
-  padding: 18px;
-  border-radius: 10px;
+  padding: 20px;
+  border-radius: 12px;
   margin: 20px 0;
   display: none;
   border-left: 4px solid #f4a261;
@@ -349,14 +284,44 @@ h1 {
 }
 
 .file-info-text {
-  font-weight: 500;
+  font-weight: 600;
   color: #444;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .file-details {
-  font-size: 0.9em;
+  font-size: 0.95em;
   color: #666;
+  margin-bottom: 15px;
+}
+
+.file-notice {
+  font-size: 0.9em;
+  color: #888;
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.delete-file-btn {
+  background: #e63946;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(230, 57, 70, 0.25);
+}
+
+.delete-file-btn:hover {
+  background: #d62828;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
 }
 
 .btn-primary {
@@ -439,41 +404,6 @@ h1 {
   opacity: 0.95;
 }
 
-.swaras-detected {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 25px;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
-}
-
-.swaras-detected h3 {
-  color: #e76f51;
-  margin-bottom: 18px;
-  font-size: 1.4em;
-}
-
-.swara-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.swara-tag {
-  background: linear-gradient(135deg, #f4a261, #e76f51);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-weight: 600;
-  font-size: 1.05em;
-  box-shadow: 0 3px 10px rgba(231, 111, 81, 0.25);
-  transition: transform 0.2s ease;
-}
-
-.swara-tag:hover {
-  transform: translateY(-2px);
-}
-
 .matching-ragas {
   background: white;
   padding: 25px;
@@ -485,43 +415,6 @@ h1 {
   color: #e76f51;
   margin-bottom: 20px;
   font-size: 1.4em;
-}
-
-.raga-item {
-  padding: 18px;
-  margin-bottom: 15px;
-  background: rgba(244, 162, 97, 0.05);
-  border-radius: 10px;
-  border-left: 4px solid #f4a261;
-  transition: all 0.3s ease;
-}
-
-.raga-item:hover {
-  background: rgba(244, 162, 97, 0.1);
-  transform: translateX(5px);
-}
-
-.raga-name {
-  font-weight: 600;
-  font-size: 1.15em;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-.raga-details {
-  font-size: 0.95em;
-  color: #666;
-  line-height: 1.6;
-}
-
-.highlight {
-  background: linear-gradient(135deg, #f4a261, #e76f51);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 5px;
-  font-weight: 600;
-  display: inline-block;
-  margin: 2px;
 }
 
 .error-message {
@@ -536,6 +429,118 @@ h1 {
 
 .error-message.show {
   display: block;
+}
+
+.chatbot-response {
+  background: rgba(244, 162, 97, 0.08);
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  line-height: 1.8;
+  color: #444;
+  border-left: 3px solid #f4a261;
+  font-size: 0.95em;
+}
+
+.chatbot-response strong {
+  color: #e76f51;
+  font-weight: 600;
+}
+
+.chatbot-response em {
+  color: #666;
+  font-style: italic;
+}
+
+.raga-item {
+  padding: 20px;
+  margin-bottom: 20px;
+  background: white;
+  border-radius: 12px;
+  border-left: 5px solid #f4a261;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.raga-item:hover {
+  transform: translateX(8px);
+  box-shadow: 0 5px 20px rgba(231, 111, 81, 0.15);
+  border-left-color: #e76f51;
+}
+
+.raga-name {
+  font-weight: 700;
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.warning-notice {
+  background: rgba(230, 57, 70, 0.1);
+  border: 2px solid #e63946;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  display: none;
+}
+
+.warning-notice.show {
+  display: block;
+}
+
+.warning-notice-title {
+  font-weight: 700;
+  color: #e63946;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.warning-notice-text {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.warning-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.warning-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.warning-btn-proceed {
+  background: #e63946;
+  color: white;
+}
+
+.warning-btn-proceed:hover {
+  background: #d62828;
+  transform: translateY(-2px);
+}
+
+.warning-btn-cancel {
+  background: #ccc;
+  color: #333;
+}
+
+.warning-btn-cancel:hover {
+  background: #bbb;
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
@@ -572,25 +577,6 @@ h1 {
   }
 }
 </style>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Audio to Rāga Mapping - NādaVerse</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* --- (same styles as before) --- */
-body {
-  font-family: 'Montserrat', sans-serif;
-  background: linear-gradient(135deg, #fff5ee 0%, #f8e8dc 50%, #ffe9c7 100%);
-  min-height: 100vh;
-  padding: 20px;
-  color: #333;
-}
-.results-header p { font-size: 1.05em; opacity: 0.95; }
-.swaras-detected { display: none !important; } /* 🔥 hide swaras completely */
-</style>
 </head>
 <body>
 <div class="container">
@@ -601,19 +587,6 @@ body {
   </header>
 
   <div class="card">
-    <div class="scale-selector">
-      <label for="scaleSelect">Select Musical Scale:</label>
-      <select id="scaleSelect">
-        <option value="C">C Major (Sa = C)</option>
-        <option value="D">D Major (Sa = D)</option>
-        <option value="E">E Major (Sa = E)</option>
-        <option value="F">F Major (Sa = F)</option>
-        <option value="G">G Major (Sa = G)</option>
-        <option value="A">A Major (Sa = A)</option>
-        <option value="B">B Major (Sa = B)</option>
-      </select>
-    </div>
-
     <div class="tabs">
       <button class="tab active" data-tab="upload">📁 Upload File</button>
       <button class="tab" data-tab="record">🎤 Record Live</button>
@@ -627,21 +600,40 @@ body {
         <input type="file" id="audioFile" accept="audio/*">
       </div>
 
-      <div class="file-info" id="fileInfo">
+      <div class="file-info" id="uploadFileInfo">
         <div class="file-info-text">📁 Selected file:</div>
-        <div class="file-details" id="fileDetails"></div>
+        <div class="file-details" id="uploadFileDetails"></div>
+        <div class="file-notice">💡 To select a different file, click the delete button below</div>
+        <button class="delete-file-btn" id="deleteUploadBtn">🗑️ Delete File</button>
       </div>
     </div>
 
     <div id="recordTab" class="tab-content">
-      <div class="record-area">
-        <p style="color:#666;">Click below to start recording</p>
+      <div class="warning-notice" id="recordWarning">
+        <div class="warning-notice-title">⚠️ Warning</div>
+        <div class="warning-notice-text">
+          You have an existing recording. Starting a new recording will permanently delete the previous one. Do you want to proceed?
+        </div>
+        <div class="warning-buttons">
+          <button class="warning-btn warning-btn-proceed" id="proceedRecordBtn">Yes, Start New Recording</button>
+          <button class="warning-btn warning-btn-cancel" id="cancelRecordBtn">Cancel</button>
+        </div>
+      </div>
+
+      <div class="record-area" id="recordArea">
+        <p class="record-instruction">Click the button below to start recording</p>
         <button class="record-btn" id="recordBtn">🎤</button>
         <div class="timer" id="timer">00:00</div>
         <div class="recording-controls" id="recordingControls">
-          <button class="stop-btn" id="stopBtn">⏹ Stop</button>
-          <button class="continue-btn" id="pauseBtn">⏸ Pause</button>
+          <button class="stop-btn" id="stopBtn">⏹ Stop Recording</button>
         </div>
+      </div>
+
+      <div class="file-info" id="recordFileInfo">
+        <div class="file-info-text">🎙️ Recorded audio:</div>
+        <div class="file-details" id="recordFileDetails"></div>
+        <div class="file-notice">💡 To record again, click the delete button below</div>
+        <button class="delete-file-btn" id="deleteRecordBtn">🗑️ Delete Recording</button>
       </div>
     </div>
 
@@ -667,54 +659,233 @@ body {
 </div>
 
 <script>
+// Tab switching
+const tabs = document.querySelectorAll('.tab');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const targetTab = tab.dataset.tab;
+    
+    tabs.forEach(t => t.classList.remove('active'));
+    tabContents.forEach(tc => tc.classList.remove('active'));
+    
+    tab.classList.add('active');
+    document.getElementById(targetTab + 'Tab').classList.add('active');
+  });
+});
+
+// Upload functionality
 const uploadArea = document.getElementById("uploadArea");
 const audioFileInput = document.getElementById("audioFile");
-const fileInfo = document.getElementById("fileInfo");
-const fileDetails = document.getElementById("fileDetails");
+const uploadFileInfo = document.getElementById("uploadFileInfo");
+const uploadFileDetails = document.getElementById("uploadFileDetails");
+const deleteUploadBtn = document.getElementById("deleteUploadBtn");
+
+let uploadedFile = null;
+
+uploadArea.addEventListener("click", () => {
+  if (!uploadedFile) {
+    audioFileInput.click();
+  }
+});
+
+uploadArea.addEventListener("dragover", e => {
+  e.preventDefault();
+  uploadArea.classList.add("dragover");
+});
+
+uploadArea.addEventListener("dragleave", () => {
+  uploadArea.classList.remove("dragover");
+});
+
+uploadArea.addEventListener("drop", e => {
+  e.preventDefault();
+  uploadArea.classList.remove("dragover");
+  if (e.dataTransfer.files.length > 0) {
+    handleFileSelect(e.dataTransfer.files[0]);
+  }
+});
+
+audioFileInput.addEventListener("change", e => {
+  if (e.target.files.length > 0) {
+    handleFileSelect(e.target.files[0]);
+  }
+});
+
+function handleFileSelect(file) {
+  const maxSize = 50 * 1024 * 1024;
+  if (file.size > maxSize) {
+    showError("File size exceeds 50MB limit");
+    return;
+  }
+  
+  uploadedFile = file;
+  const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+  uploadFileDetails.textContent = `${file.name} (${sizeMB} MB)`;
+  
+  uploadArea.style.display = 'none';
+  uploadFileInfo.classList.add("show");
+  analyzeBtn.disabled = false;
+}
+
+deleteUploadBtn.addEventListener("click", () => {
+  uploadedFile = null;
+  audioFileInput.value = '';
+  uploadFileInfo.classList.remove("show");
+  uploadArea.style.display = 'block';
+  analyzeBtn.disabled = true;
+  results.classList.remove("show");
+});
+
+// Recording functionality
+const recordBtn = document.getElementById("recordBtn");
+const stopBtn = document.getElementById("stopBtn");
+const timer = document.getElementById("timer");
+const recordingControls = document.getElementById("recordingControls");
+const recordFileInfo = document.getElementById("recordFileInfo");
+const recordFileDetails = document.getElementById("recordFileDetails");
+const deleteRecordBtn = document.getElementById("deleteRecordBtn");
+const recordArea = document.getElementById("recordArea");
+const recordWarning = document.getElementById("recordWarning");
+const proceedRecordBtn = document.getElementById("proceedRecordBtn");
+const cancelRecordBtn = document.getElementById("cancelRecordBtn");
+
+let mediaRecorder = null;
+let audioChunks = [];
+let recordedBlob = null;
+let recordingStartTime = null;
+let timerInterval = null;
+let hasExistingRecording = false;
+
+recordBtn.addEventListener("click", async () => {
+  if (hasExistingRecording) {
+    recordWarning.classList.add("show");
+    recordArea.style.display = 'none';
+    return;
+  }
+  
+  startRecording();
+});
+
+proceedRecordBtn.addEventListener("click", () => {
+  recordWarning.classList.remove("show");
+  recordArea.style.display = 'block';
+  hasExistingRecording = false;
+  recordedBlob = null;
+  startRecording();
+});
+
+cancelRecordBtn.addEventListener("click", () => {
+  recordWarning.classList.remove("show");
+  recordArea.style.display = 'block';
+});
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    
+    mediaRecorder.ondataavailable = e => {
+      audioChunks.push(e.data);
+    };
+    
+    mediaRecorder.onstop = () => {
+      recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const sizeMB = (recordedBlob.size / 1024 / 1024).toFixed(2);
+      recordFileDetails.textContent = `Recording (${sizeMB} MB, Duration: ${timer.textContent})`;
+      
+      recordArea.style.display = 'none';
+      recordFileInfo.classList.add("show");
+      hasExistingRecording = true;
+      analyzeBtn.disabled = false;
+      
+      stream.getTracks().forEach(track => track.stop());
+    };
+    
+    mediaRecorder.start();
+    recordBtn.classList.add("recording");
+    recordBtn.textContent = "🔴";
+    recordBtn.disabled = true;
+    timer.classList.add("show");
+    recordingControls.classList.add("show");
+    
+    recordingStartTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+    
+  } catch (err) {
+    showError("Microphone access denied or unavailable: " + err.message);
+  }
+}
+
+function updateTimer() {
+  const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+  const minutes = Math.floor(elapsed / 60);
+  const seconds = elapsed % 60;
+  timer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+stopBtn.addEventListener("click", () => {
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+    clearInterval(timerInterval);
+    recordBtn.classList.remove("recording");
+    recordBtn.textContent = "🎤";
+    recordBtn.disabled = false;
+    recordingControls.classList.remove("show");
+  }
+});
+
+deleteRecordBtn.addEventListener("click", () => {
+  recordedBlob = null;
+  hasExistingRecording = false;
+  recordFileInfo.classList.remove("show");
+  recordArea.style.display = 'block';
+  timer.classList.remove("show");
+  timer.textContent = "00:00";
+  analyzeBtn.disabled = true;
+  results.classList.remove("show");
+});
+
+// Analysis
 const analyzeBtn = document.getElementById("analyzeBtn");
 const loading = document.getElementById("loading");
 const results = document.getElementById("results");
 const errorMessage = document.getElementById("errorMessage");
 const ragaList = document.getElementById("ragaList");
 
-let selectedFile = null;
-
-uploadArea.addEventListener("click", () => audioFileInput.click());
-audioFileInput.addEventListener("change", e => {
-  if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
-});
-
-function handleFileSelect(file) {
-  const maxSize = 50 * 1024 * 1024;
-  if (file.size > maxSize) return showError("File exceeds 50MB");
-  selectedFile = file;
-  const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-  fileDetails.textContent = `${file.name} (${sizeMB} MB)`;
-  fileInfo.classList.add("show");
-  analyzeBtn.disabled = false;
-}
-
 function showError(msg) {
   errorMessage.textContent = msg;
   errorMessage.classList.add("show");
-  setTimeout(() => errorMessage.classList.remove("show"), 4000);
+  setTimeout(() => errorMessage.classList.remove("show"), 5000);
 }
 
 analyzeBtn.addEventListener("click", async () => {
-  if (!selectedFile) return;
+  const fileToAnalyze = uploadedFile || recordedBlob;
+  
+  if (!fileToAnalyze) {
+    showError("Please upload or record audio first");
+    return;
+  }
+  
   loading.classList.add("show");
   results.classList.remove("show");
 
   const formData = new FormData();
-  formData.append("audio", selectedFile);
+  formData.append("audio", fileToAnalyze, uploadedFile ? uploadedFile.name : "recording.webm");
 
   try {
-    const response = await fetch("/api/analyze-audio", { method: "POST", body: formData });
+    const response = await fetch("/api/analyze-audio", { 
+      method: "POST", 
+      body: formData 
+    });
+    
     const data = await response.json();
     console.log("🧠 Backend response:", data);
 
-    if (!Array.isArray(data.ragas)) {
-      showError(data.error || "No rāgas detected.");
+    if (!response.ok || !Array.isArray(data.ragas)) {
+      showError(data.error || "No rāgas detected");
       loading.classList.remove("show");
       return;
     }
@@ -724,29 +895,44 @@ analyzeBtn.addEventListener("click", async () => {
     results.classList.add("show");
   } catch (err) {
     loading.classList.remove("show");
-    showError("Error: " + err.message);
+    showError("Analysis failed: " + err.message);
   }
 });
 
 function displayRagasFromAudio(ragas) {
   ragaList.innerHTML = "";
+  
   if (!ragas || ragas.length === 0) {
-    ragaList.innerHTML = '<p style="color:#888;text-align:center;">No matching rāgas found in DB.</p>';
+    ragaList.innerHTML = '<p style="color:#888;text-align:center;">No matching rāgas found.</p>';
     return;
   }
 
   ragas.forEach((r, i) => {
     const item = document.createElement("div");
     item.className = "raga-item";
+    
+    const chatbotText = r.chatbot_details || "Details not available";
+    
     item.innerHTML = `
-      <div class="raga-name">${i + 1}. ${r.raaga_name} (${r.confidence.toFixed(1)}%)</div>
+      <div class="raga-name">
+        ${i + 1}. ${r.raaga_name} 
+        <span style="color:#f4a261;">(${r.confidence.toFixed(1)}% confidence)</span>
+      </div>
       <div class="raga-details">
-        <strong>Arohanam:</strong> ${r.arohanam}<br>
-        <strong>Avarohanam:</strong> ${r.avarohanam}
-      </div>`;
+        <div class="chatbot-response">${formatChatbotText(chatbotText)}</div>
+      </div>
+    `;
     ragaList.appendChild(item);
   });
 }
+
+function formatChatbotText(text) {
+  return text
+    .replace(/\n/g, '<br>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+}
 </script>
 </body>
+
 </html>
